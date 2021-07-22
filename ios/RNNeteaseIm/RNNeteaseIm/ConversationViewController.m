@@ -439,15 +439,11 @@
 
 //发送自定义消息
 -(void)sendCustomMessage:(NSDictionary *)dataDict{
-    NSString *strW = [dataDict objectForKey:@"Width"] ? [NSString stringWithFormat:@"%@",[dataDict objectForKey:@"Width"]] : @"0";
-    NSString *strH = [dataDict objectForKey:@"Height"] ? [NSString stringWithFormat:@"%@",[dataDict objectForKey:@"Height"]] : @"0";
-    [dataDict setValue:strW forKey:@"Width"];
-    [dataDict setValue:strH forKey:@"Height"];
     [self sendCustomMessage:CustomMessgeTypeCustom data:dataDict];
 }
 
-//发送自定义消息2
--(void)sendCustomMessage:(NSInteger )custType data:(NSDictionary *)dataDict{
+//发送自定义消息
+-(void)sendCustomMessage:(NSInteger)custType data:(NSDictionary *)dataDict{
     NIMMessage *message;
     DWCustomAttachment *obj = [[DWCustomAttachment alloc]init];
     obj.custType = custType;
