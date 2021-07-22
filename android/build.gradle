@@ -1,0 +1,55 @@
+apply plugin: 'com.android.library'
+
+def DEFAULT_COMPILE_SDK_VERSION   = 27
+def DEFAULT_BUILD_TOOLS_VERSION   = "27.0.3"
+def DEFAULT_TARGET_SDK_VERSION    = 27
+def DEFAULT_MIN_SDK_VERSION       = 16
+def DEFAULT_SUPPOR_LIBVERSION = "27.0.3"
+
+android {
+//    useLibrary 'org.apache.http.legacy'
+
+    compileSdkVersion rootProject.hasProperty('compileSdkVersion') ? rootProject.compileSdkVersion : DEFAULT_COMPILE_SDK_VERSION
+
+
+    defaultConfig {
+        minSdkVersion rootProject.hasProperty('minSdkVersion') ? rootProject.minSdkVersion : DEFAULT_MIN_SDK_VERSION
+        targetSdkVersion rootProject.hasProperty('targetSdkVersion') ? rootProject.targetSdkVersion : DEFAULT_TARGET_SDK_VERSION
+        versionCode 1
+        versionName "1.0"
+        ndk {
+            //设置支持的SO库架构
+            abiFilters "armeabi-v7a", "x86","arm64-v8a","x86_64"
+        }
+    }
+    buildTypes {
+        release {
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+    sourceSets{
+        main{
+            jniLibs.srcDir(['libs'])
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation fileTree(include: '*.jar', dir: 'libs')
+    implementation 'com.facebook.react:react-native:+'
+    // 基础功能 (必需)
+    implementation 'com.netease.nimlib:basesdk:6.3.0'
+    implementation 'com.netease.nimlib:push:6.3.0'
+    implementation 'com.alibaba:fastjson:1.2.57'
+    // implementation 'com.huawei.hms:push:3.0.3.301'
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+
+}
+  
