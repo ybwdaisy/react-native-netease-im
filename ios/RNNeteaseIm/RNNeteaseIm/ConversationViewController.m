@@ -161,7 +161,11 @@
                 [fromUser setObject:@"" forKey:tem];
             }
         }
-        [dic setObject:[NSString stringWithFormat:@"%@", message.text] forKey:@"text"];
+        if (message.text) {
+            [dic setObject:[NSString stringWithFormat:@"%@", message.text] forKey:@"text"];
+        } else {
+            [dic setObject:@"" forKey:@"text"];
+        }
         [dic setObject:[NSString stringWithFormat:@"%@", message.session.sessionId] forKey:@"sessionId"];
         [dic setObject:[NSString stringWithFormat:@"%ld", message.session.sessionType] forKey:@"sessionType"];
         switch (message.deliveryState) {
@@ -294,14 +298,12 @@
                     case CustomMessgeTypeRedpacket: //红包
                     {
                         [dic setObject:obj.dataDict forKey:@"extend"];
-//                        [dic setObject:@"redpacket" forKey:@"custType"];
                         [dic setObject:@"redpacket" forKey:@"msgType"];
                     }
                         break;
                     case CustomMessgeTypeBankTransfer: //转账
                     {
                         [dic setObject:obj.dataDict  forKey:@"extend"];
-//                        [dic setObject:@"transfer" forKey:@"custType"];
                         [dic setObject:@"transfer" forKey:@"msgType"];
                     }
                         break;
@@ -310,7 +312,6 @@
                         NSDictionary *dataDict = [self dealWithData:obj.dataDict];
                         if (dataDict) {
                             [dic setObject:dataDict  forKey:@"extend"];
-//                            [dic setObject:@"redpacketOpen" forKey:@"custType"];
                             [dic setObject:@"redpacketOpen" forKey:@"msgType"];
                         }else{
 
@@ -322,7 +323,6 @@
                     case CustomMessgeTypeAccountNotice: //账户通知，与账户金额相关变动
                     {
                         [dic setObject:[NSString stringWithFormat:@"%d",message.isRemoteRead] forKey:@"isRemoteRead"];
-//                        [dic setObject:[NSString stringWithFormat:@"%ld", message.messageType] forKey:@"msgType"];
                         if (obj.custType == CustomMessgeTypeAccountNotice) {
                             [dic setObject:obj.dataDict  forKey:@"extend"];
                             [dic setObject:@"account_notice" forKey:@"msgType"];
@@ -450,6 +450,19 @@
     obj.dataDict = dataDict;
     message = [NIMMessageMaker msgWithCustomAttachment:obj andeSession:self._session];
     [[NIMSDK sharedSDK].chatManager sendMessage:message toSession:self._session error:nil];
+}
+
+// 更新自定义消息
+-(void)updateCustomMessage:(NSString *)messageId andAttachment:(NSDictionary *)attachment {
+    NSArray *currentMessage = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:self._session messageIds:@[messageId]];
+    NIMMessage *message = currentMessage[0];
+    DWCustomAttachment *customAttachment = [[DWCustomAttachment alloc]init];
+    customAttachment.custType = CustomMessgeTypeCustom;
+    customAttachment.dataDict = attachment;
+    NIMCustomObject *customObject = [[NIMCustomObject alloc] init];
+    customObject.attachment = customAttachment;
+    message.messageObject = customObject;
+    [[NIMSDK sharedSDK].conversationManager updateMessage:message forSession:self._session completion:nil];
 }
 
 
@@ -832,7 +845,11 @@
             [fromUser setObject:@"" forKey:tem];
         }
     }
-    [dic2 setObject:[NSString stringWithFormat:@"%@", message.text] forKey:@"text"];
+    if (message.text) {
+        [dic2 setObject:[NSString stringWithFormat:@"%@", message.text] forKey:@"text"];
+    } else {
+        [dic2 setObject:@"" forKey:@"text"];
+    }
     [dic2 setObject:[NSString stringWithFormat:@"%@", message.session.sessionId] forKey:@"sessionId"];
     [dic2 setObject:[NSString stringWithFormat:@"%ld", message.session.sessionType] forKey:@"sessionType"];
     switch (message.deliveryState) {

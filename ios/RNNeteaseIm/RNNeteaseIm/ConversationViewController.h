@@ -38,6 +38,8 @@ typedef void(^Errors)(id erro);
 -(void)sendVideoMessage:(  NSString *)path duration:(  NSString *)duration width:(  NSString *)width height:(  NSString *)height displayName:(  NSString *)displayName;
 //发送自定义消息
 -(void)sendCustomMessage:(NSDictionary *)dataDict;
+//更新自定义消息
+-(void)updateCustomMessage:(NSString *)messageId andAttachment:(NSDictionary *)attachment;
 //发送地理位置消息
 -(void)sendLocationMessage:(  NSString *)latitude longitude:(  NSString *)longitude address:(  NSString *)address;
 //发送提醒消息
