@@ -6,7 +6,10 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.netease.im.IMApplication;
@@ -67,8 +70,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import androidx.annotation.NonNull;
 
 import static com.netease.nimlib.sdk.NIMClient.getService;
 
@@ -733,25 +734,18 @@ public class SessionService {
         sendMessageSelf(message, onSendMessageListener, false);
     }
 
-    public void sendDefaultMessage(String type, String digst, String content, OnSendMessageListener onSendMessageListener) {
+    public void sendCustomMessage(ReadableMap readableMap, OnSendMessageListener onSendMessageListener) {
         CustomMessageConfig config = new CustomMessageConfig();
-        DefaultCustomAttachment attachment = new DefaultCustomAttachment(type);
-        attachment.setDigst(digst);
-        attachment.setContent(content);
-        IMMessage message = MessageBuilder.createCustomMessage(sessionId, sessionTypeEnum, digst, attachment, config);
+        DefaultCustomAttachment attachment = new DefaultCustomAttachment();
+        String pushContent = readableMap.getString("pushContent");
+        String recentContent = readableMap.getString("recentContent");
+        attachment.setRecentContent(recentContent);
+        attachment.setCustomData(readableMap);
+        IMMessage message = MessageBuilder.createCustomMessage(sessionId, sessionTypeEnum, pushContent, attachment, config);
         sendMessageSelf(message, onSendMessageListener, false);
     }
 
     public void sendRedPacketOpenMessage(String sendId, String openId, String hasRedPacket, String serialNo, OnSendMessageListener onSendMessageListener) {
-//        CustomMessageConfig config = new CustomMessageConfig();
-//        config.enableUnreadCount = false;
-//        config.enablePush = false;
-//        RedPacketOpenAttachement attachment = new RedPacketOpenAttachement();
-//        attachment.setParams(sendId, openId, hasRedPacket, serialNo);
-//        IMMessage message = MessageBuilder.createCustomMessage(sessionId, sessionTypeEnum, sendId + ";" + openId, attachment, config);
-//
-////        message.
-//        sendMessageSelf(message, onSendMessageListener,false);
         long timestamp = new Date().getTime() / 1000;
         SessionUtil.sendRedPacketOpenNotification(sessionId, sessionTypeEnum, sendId, openId, hasRedPacket, serialNo, timestamp);
         SessionUtil.sendRedPacketOpenLocal(sessionId, sessionTypeEnum, sendId, openId, hasRedPacket, serialNo, timestamp);

@@ -10,15 +10,14 @@ public interface CustomAttachmentType {
     String BankTransfer = "transfer";//转账
 
     String BankTransferSystem= "system";//系统消息
-    String RedPacketOpen = "redpacketOpen";//拆红包提醒
+    String RedPacketOpen = "redPacketOpen";//拆红包提醒
 
-    String ProfileCard = "ProfileCard";//个人名片
-    String Collection = "Collection";//收藏
-    String SystemImageText = "SystemImageText";//系统富文本消息
-
+    String ProfileCard = "profileCard";//个人名片
 
     String LinkUrl = "url";//链接
-    String AccountNotice = "account_notice";//账户变动通知
+    String AccountNotice = "accountNotice";//账户变动通知
     String Card = "card";//账户变动通知
+
+    String Custom = "custom"; // 自定义消息
 
 }

@@ -277,7 +277,7 @@ public class ReactCache {
                             break;
                         default:
                             if (attachment instanceof DefaultCustomAttachment) {
-                                content = ((DefaultCustomAttachment) attachment).getDigst();
+                                content = ((DefaultCustomAttachment) attachment).getRecentContent();
                                 if (TextUtils.isEmpty(content)) {
                                     content = "[未知消息]";
                                 }
@@ -750,7 +750,7 @@ public class ReactCache {
      * @return
      */
     static String getMessageType(IMMessage item) {
-        String type = MessageConstant.MsgType.CUSTON;
+        String type = MessageConstant.MsgType.CUSTOM;
         switch (item.getMsgType()) {
             case text:
                 type = MessageConstant.MsgType.TEXT;
@@ -808,15 +808,15 @@ public class ReactCache {
                             type = MessageConstant.MsgType.CARD;
                             break;
                         default:
-                            type = MessageConstant.MsgType.CUSTON;
+                            type = MessageConstant.MsgType.CUSTOM;
                             break;
                     }
                 } else {
-                    type = MessageConstant.MsgType.CUSTON;
+                    type = MessageConstant.MsgType.CUSTOM;
                 }
                 break;
             default:
-                type = MessageConstant.MsgType.CUSTON;
+                type = MessageConstant.MsgType.CUSTOM;
                 break;
         }
 
@@ -993,9 +993,6 @@ public class ReactCache {
                         case CustomAttachmentType.RedPacketOpen:
                             if (attachment instanceof RedPacketOpenAttachement) {
                                 RedPacketOpenAttachement rpOpen = (RedPacketOpenAttachement) attachment;
-//                                if (!rpOpen.isSelf()) {
-//                                    return null;
-//                                }
                                 itemMap.putMap(MESSAGE_EXTEND, rpOpen.toReactNative());
                             }
                             break;
