@@ -43,7 +43,7 @@ public class CustomAttachParser implements MsgAttachmentParser {
                     attachment = new CardAttachment();
                     break;
                 default:
-                    attachment = new DefaultCustomAttachment(type);
+                    attachment = new DefaultCustomAttachment();
                     break;
             }
 

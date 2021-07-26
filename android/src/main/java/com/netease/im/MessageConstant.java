@@ -23,7 +23,7 @@ public class MessageConstant {
         public final static String RED_PACKET_OPEN = "redpacketOpen";
         public final static String LINK = "url";
         public final static String CARD = "card";
-        public final static String CUSTON = "custom";
+        public final static String CUSTOM = "custom";
     }
 
     public class MsgStatus {

@@ -1,60 +1,74 @@
 package com.netease.im.session.extension;
 
 import com.alibaba.fastjson.JSONObject;
-import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.netease.im.ReactNativeJson;
 
-/**
- * Created by zhoujianghua on 2015/4/10.
- */
+import org.json.JSONException;
+
 public class DefaultCustomAttachment extends CustomAttachment {
 
-    final static String KEY_DIGST = "digst";
-    private String content;
-    private String digst;
+    final static String KEY_RECENT = "recentContent";
+    private String recentContent; // 最近会话显示的内容
+    private String customData; // 自定义数据
 
-    public DefaultCustomAttachment(String type) {
-        super(type);
+    public DefaultCustomAttachment() {
+        super(CustomAttachmentType.Custom);
     }
 
     @Override
     protected void parseData(JSONObject data) {
-        digst = data.getString(KEY_DIGST);
-        content = data.toJSONString();
+        this.recentContent = data.getString(KEY_RECENT);
+        this.customData = data.toJSONString();
     }
 
     @Override
     protected JSONObject packData() {
         JSONObject data = null;
         try {
-            data = JSONObject.parseObject(content);
+            data = JSONObject.parseObject(customData);
             if(data == null){
                 data = new JSONObject();
             }
-            data.put(KEY_DIGST, digst);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return data;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setCustomData(ReadableMap map) {
+        try {
+            JSONObject object = ReactNativeJson.convertMapToJson(map);
+            if (object == null) {
+                object = new JSONObject();
+            }
+            this.customData = object.toJSONString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void setDigst(String digst) {
-        this.digst = digst;
+    public void setRecentContent(String recentContent) {
+        this.recentContent = recentContent;
     }
 
-    public String getDigst() {
-        return digst;
+    public String getRecentContent() {
+        return recentContent;
     }
 
     @Override
     public WritableMap toReactNative() {
-        WritableMap writableMap = Arguments.createMap();
-        writableMap.putString("digst", digst);
-        writableMap.putString("content", content);
-        return writableMap;
+        WritableMap map = new WritableNativeMap();
+        JSONObject data = JSONObject.parseObject(customData);
+        try {
+            map = ReactNativeJson.convertJsonToMap(data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return map;
     }
+
+
 }

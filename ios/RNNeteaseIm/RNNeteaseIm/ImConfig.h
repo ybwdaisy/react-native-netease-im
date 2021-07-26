@@ -44,7 +44,7 @@
 #define CustomMessgeTypeAccountNotice  8   //账户通知，与账户金额相关变动 account_notice
 #define CustomMessgeTypeRedPacketOpenMessage  9     //发送拆红包
 #define CustomMessgeTypeBusinessCard  10     //名片
-#define CustomMessgeTypeCustom  102     //名片
+#define CustomMessgeTypeCustom  102     //自定义消息
 
 
 #endif /* ImConfig_h */

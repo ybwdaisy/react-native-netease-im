@@ -1088,7 +1088,6 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule implements Lif
         sessionService.sendTextMessage(content, atUserIdList, new SessionService.OnSendMessageListener() {
             @Override
             public int onResult(int code, IMMessage message) {
-//                promise.resolve(ReactCache.createMessage(message,null));
                 return 0;
             }
         });
@@ -1099,7 +1098,6 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule implements Lif
         sessionService.sendTextMessage(content, null, new SessionService.OnSendMessageListener() {
             @Override
             public int onResult(int code, IMMessage message) {
-//                promise.resolve(ReactCache.createMessage(message,null));
                 return 0;
             }
         });
@@ -1154,13 +1152,18 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule implements Lif
     }
 
     @ReactMethod
-    public void sendDefaultMessage(String type, String digst, String content, final Promise promise) {
-        sessionService.sendDefaultMessage(type, digst, content, new SessionService.OnSendMessageListener() {
+    public void sendCustomMessage(ReadableMap attachment) {
+        sessionService.sendCustomMessage(attachment, new SessionService.OnSendMessageListener() {
             @Override
             public int onResult(int code, IMMessage message) {
                 return 0;
             }
         });
+    }
+
+    @ReactMethod
+    public void updateCustomMessage(String messageId, ReadableMap attachment) {
+        sessionService.updateCustomMessage(messageId, attachment);
     }
 
     @ReactMethod

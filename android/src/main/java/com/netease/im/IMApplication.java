@@ -9,6 +9,8 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.annotation.DrawableRes;
+
 import com.netease.im.common.ImageLoaderKit;
 import com.netease.im.common.sys.SystemUtil;
 import com.netease.im.contact.DefalutUserInfoProvider;
@@ -33,7 +35,6 @@ import com.netease.nimlib.sdk.StatusBarNotificationConfig;
 import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.mixpush.MixPushConfig;
 import com.netease.nimlib.sdk.mixpush.MixPushService;
-import com.netease.nimlib.sdk.mixpush.NIMPushClient;
 import com.netease.nimlib.sdk.msg.MessageNotifierCustomization;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.MsgServiceObserve;
@@ -41,9 +42,6 @@ import com.netease.nimlib.sdk.msg.model.CustomNotification;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.RevokeMsgNotification;
 import com.netease.nimlib.sdk.uinfo.UserInfoProvider;
-import com.netease.nimlib.sdk.util.NIMUtil;
-
-import androidx.annotation.DrawableRes;
 
 
 /**
@@ -216,10 +214,7 @@ public class IMApplication {
             // APP默认 StatusBarNotificationConfig 配置修改后，使其生效
             userConfig.notificationEntrance = config.notificationEntrance;
             userConfig.notificationFolded = config.notificationFolded;
-//          userConfig.notificationColor = Color.parseColor("#3a9efb");
         }
-        // 持久化生效
-//        UserPreferences.setStatusConfig(config);
         // SDK statusBarNotificationConfig 生效
         options.statusBarNotificationConfig = userConfig;
     }
@@ -246,8 +241,6 @@ public class IMApplication {
         NIMClient.getService(MsgService.class).registerCustomAttachmentParser(new CustomAttachParser());
         initUserInfoProvider(userInfoProvider);
         initContactProvider(contactProvider);
-//        initDefalutSessionCustomization();
-//        initDefalutContactEventListener();
 
         imageLoaderKit = new ImageLoaderKit(context, null);
 
@@ -264,8 +257,6 @@ public class IMApplication {
 
         // 注册消息撤回监听器
         registerMsgRevokeObserver();
-
-//        NIMClient.getService(MsgServiceObserve.class).observeCustomNotification(notificationObserver, true);
 
         // init log
         String path = StorageUtil.getDirectoryByDirType(StorageType.TYPE_LOG);
