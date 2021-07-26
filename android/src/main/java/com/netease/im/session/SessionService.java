@@ -188,13 +188,6 @@ public class SessionService {
      * @param isQuery
      */
     public void updateShowTimeItem(List<IMMessage> items, boolean isQuery) {
-//        IMMessage anchor = isQuery ? items.get(0) : lastMessage;
-//
-//        for (IMMessage message : items) {
-//            if (setShowTimeFlag(message, anchor)) {
-//                anchor = message;
-//            }
-//        }
 
         if (!isQuery && fistMessage != null) {
             fistMessage = items.get(0);
@@ -422,7 +415,6 @@ public class SessionService {
 
             deleteItem(message, false);
             revokMessage(message);
-//            MessageHelper.getInstance().onRevokeMessage(message);
         }
     };
     private UserInfoObservable.UserInfoObserver uinfoObserver;
@@ -484,7 +476,6 @@ public class SessionService {
 
                                     if (r.size() < size && isLimit) {
                                         fistMessage = result.get(0);
-//                                    queryMessageListEx(fistMessage, direction, size - r.size(), onMessageQueryListListener);
                                     }
                                 }
 
@@ -532,7 +523,6 @@ public class SessionService {
         service.observeMessageReceipt(messageReceiptObserver, register);
 
         service.observeMsgStatus(messageStatusObserver, register);
-//        service.observeAttachmentProgress(attachmentProgressObserver, register);
         service.observeRevokeMessage(revokeMessageObserver, register);
         observerAttachProgress(register);
         if (register) {
@@ -621,9 +611,6 @@ public class SessionService {
         // 重置状态为unsent
         item.setStatus(MsgStatusEnum.sending);
         deleteItem(item, true);
-//                onMsgSend(item);
-//                appendPushConfig(item);
-//                getMsgService().sendMessage(item, true);
         sendMessageSelf(item, null, true);
     }
 
@@ -636,7 +623,6 @@ public class SessionService {
 
         if (selectedMembers != null && !selectedMembers.isEmpty()) {
             MemberPushOption option = createMemPushOption(selectedMembers, message);
-//            message.setPushContent("有人@了你");
             message.setMemberPushOption(option);
         }
         sendMessageSelf(message, onSendMessageListener, false);
@@ -695,15 +681,7 @@ public class SessionService {
         sendMessageSelf(message, onSendMessageListener, false);
     }
 
-    //        String md5Path = StorageUtil.getWritePath(filename, StorageType.TYPE_VIDEO);
-//        MediaPlayer mediaPlayer = getVideoMediaPlayer(f);
-//        long duration = mediaPlayer == null ? 0 : mediaPlayer.getDuration();
-//        int height = mediaPlayer == null ? 0 : mediaPlayer.getVideoHeight();
-//        int width = mediaPlayer == null ? 0 : mediaPlayer.getVideoWidth();
     public void sendVideoMessage(String file, String duration, int width, int height, String displayName, OnSendMessageListener onSendMessageListener) {
-
-
-//        String filename = md5 + "." + FileUtil.getExtensionName(file);
         file = Uri.parse(file).getPath();
         String md5 = TextUtils.isEmpty(displayName) ? MD5.getStreamMD5(file) : displayName;
         File f = new File(file);
@@ -734,15 +712,28 @@ public class SessionService {
         sendMessageSelf(message, onSendMessageListener, false);
     }
 
-    public void sendCustomMessage(ReadableMap readableMap, OnSendMessageListener onSendMessageListener) {
+    public void sendCustomMessage(ReadableMap attachment, OnSendMessageListener onSendMessageListener) {
         CustomMessageConfig config = new CustomMessageConfig();
-        DefaultCustomAttachment attachment = new DefaultCustomAttachment();
-        String pushContent = readableMap.getString("pushContent");
-        String recentContent = readableMap.getString("recentContent");
-        attachment.setRecentContent(recentContent);
-        attachment.setCustomData(readableMap);
-        IMMessage message = MessageBuilder.createCustomMessage(sessionId, sessionTypeEnum, pushContent, attachment, config);
+        DefaultCustomAttachment defaultCustomAttachment = new DefaultCustomAttachment();
+        String pushContent = attachment.getString("pushContent");
+        String recentContent = attachment.getString("recentContent");
+        defaultCustomAttachment.setRecentContent(recentContent);
+        defaultCustomAttachment.setCustomData(attachment);
+        IMMessage message = MessageBuilder.createCustomMessage(sessionId, sessionTypeEnum, pushContent, defaultCustomAttachment, config);
         sendMessageSelf(message, onSendMessageListener, false);
+    }
+
+    public void updateCustomMessage(String messageId, final ReadableMap attachment) {
+        queryMessage(messageId, new SessionService.OnMessageQueryListener() {
+            @Override
+            public int onResult(int code, IMMessage message) {
+                DefaultCustomAttachment defaultCustomAttachment = new DefaultCustomAttachment();
+                defaultCustomAttachment.setCustomData(attachment);
+                message.setAttachment(defaultCustomAttachment);
+                getMsgService().updateIMMessage(message);
+                return 0;
+            }
+        });
     }
 
     public void sendRedPacketOpenMessage(String sendId, String openId, String hasRedPacket, String serialNo, OnSendMessageListener onSendMessageListener) {
@@ -870,20 +861,8 @@ public class SessionService {
         appendPushConfig(message);
         if (sessionTypeEnum == SessionTypeEnum.P2P) {
             sessionName = NimUserInfoCache.getInstance().getUserName(sessionId);
-
-
             isFriend = NIMClient.getService(FriendService.class).isMyFriend(sessionId);
             LogUtil.w(TAG, "isFriend:" + isFriend);
-            // if (!isFriend) {
-            //     message.setStatus(MsgStatusEnum.fail);
-            //     CustomMessageConfig config = new CustomMessageConfig();
-            //     config.enablePush = false;
-            //     config.enableUnreadCount = false;
-            //     message.setConfig(config);
-            //     getMsgService().saveMessageToLocal(message, true);
-            //     sendTipMessage(sessionName + "开启了朋友验证，你还不是他(她)朋友。请先发送朋友验证请求，对方验证后，才能聊天。发送朋友验证", null, true, false);
-            //     return;
-            // }
         }
         getMsgService().sendMessage(message, resend).setCallback(new RequestCallback<Void>() {
             @Override
@@ -913,10 +892,6 @@ public class SessionService {
     }
 
     private void appendPushConfig(IMMessage message) {
-//        CustomPushContentProvider customConfig = null;//NimUIKit.getCustomPushContentProvider();
-//        if (customConfig != null) {
-//            String content = customConfig.getPushContent(message);
-//            Map<String, Object> payload = customConfig.getPushPayload(message);
         message.setPushContent(message.getContent());
         Map<String, Object> payload = new HashMap<>();
         Map<String, Object> body = new HashMap<>();
@@ -931,7 +906,6 @@ public class SessionService {
         body.put("sessionName", SessionUtil.getSessionName(sessionId, message.getSessionType(), true));
         payload.put("sessionBody", body);
         message.setPushPayload(payload);
-//        }
     }
 
     private MemberPushOption createMemPushOption(List<String> selectedMembers, IMMessage message) {
@@ -942,7 +916,6 @@ public class SessionService {
 
         MemberPushOption memberPushOption = new MemberPushOption();
         memberPushOption.setForcePush(true);
-//        memberPushOption.setForcePushContent(message.getContent());
         memberPushOption.setForcePushContent("有人@了你");
         memberPushOption.setForcePushList(selectedMembers);
         return memberPushOption;
@@ -954,9 +927,6 @@ public class SessionService {
             FileAttachment attachment = null;
             try {
                 attachment = (FileAttachment) message.getAttachment();
-//                AudioAttachment audioAttachment;
-//                VideoAttachment videoAttachment;
-//                ImageAttachment imageAttachment;
             } catch (Exception e) {
                 e.printStackTrace();
             }

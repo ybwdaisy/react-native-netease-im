@@ -5,6 +5,8 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.text.TextUtils;
 
+import androidx.core.app.NotificationCompat;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.netease.im.IMApplication;
@@ -25,8 +27,6 @@ import com.netease.nimlib.sdk.msg.model.IMMessage;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import androidx.core.app.NotificationCompat;
 
 /**
  * Created by dowin on 2017/5/2.

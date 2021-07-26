@@ -1152,13 +1152,18 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule implements Lif
     }
 
     @ReactMethod
-    public void sendCustomMessage(ReadableMap readableMap) {
-        sessionService.sendCustomMessage(readableMap, new SessionService.OnSendMessageListener() {
+    public void sendCustomMessage(ReadableMap attachment) {
+        sessionService.sendCustomMessage(attachment, new SessionService.OnSendMessageListener() {
             @Override
             public int onResult(int code, IMMessage message) {
                 return 0;
             }
         });
+    }
+
+    @ReactMethod
+    public void updateCustomMessage(String messageId, ReadableMap attachment) {
+        sessionService.updateCustomMessage(messageId, attachment);
     }
 
     @ReactMethod
