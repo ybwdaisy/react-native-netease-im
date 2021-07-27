@@ -23,7 +23,7 @@
             strType = @"url";
             break;
         case CustomMessgeTypeAccountNotice:
-            strType = @"account_notice";
+            strType = @"accountNotice";
             break;
         case CustomMessgeTypeRedPacketOpenMessage:
             strType = @"redpacketOpen";

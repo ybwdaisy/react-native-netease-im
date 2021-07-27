@@ -744,7 +744,7 @@ public class ReactCache {
      * case redpacket
      * case transfer
      * case url
-     * case account_notice
+     * case accountNotice
      * case redpacketOpen
      *
      * @return

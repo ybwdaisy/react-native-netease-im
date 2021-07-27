@@ -41,7 +41,7 @@
 #define CustomMessgeTypeRedpacket  5  //红包类型 redpacket
 #define CustomMessgeTypeBankTransfer  6   //转账类型 transfer
 #define CustomMessgeTypeUrl  7   // 连接类型 url
-#define CustomMessgeTypeAccountNotice  8   //账户通知，与账户金额相关变动 account_notice
+#define CustomMessgeTypeAccountNotice  8   //账户通知，与账户金额相关变动 accountNotice
 #define CustomMessgeTypeRedPacketOpenMessage  9     //发送拆红包
 #define CustomMessgeTypeBusinessCard  10     //名片
 #define CustomMessgeTypeCustom  102     //自定义消息

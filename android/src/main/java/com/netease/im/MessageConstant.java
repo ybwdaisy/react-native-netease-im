@@ -14,7 +14,7 @@ public class MessageConstant {
         public final static String FILE = "file";
         public final static String ROBOT = "robot";
         public final static String BANK_TRANSFER = "transfer";
-        public final static String ACCOUNT_NOTICE = "account_notice";
+        public final static String ACCOUNT_NOTICE = "accountNotice";
         public final static String EVENT = "event";
         public final static String LOCATION = "location";
         public final static String NOTIFICATION = "notification";

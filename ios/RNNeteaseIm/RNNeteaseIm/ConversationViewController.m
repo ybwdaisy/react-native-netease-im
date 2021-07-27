@@ -232,17 +232,6 @@
             [videoObj setObject:[NSString stringWithFormat:@"%@",object.url ] forKey:@"videoUrl"];
             [videoObj setObject:[NSString stringWithFormat:@"%@", object.coverUrl ] forKey:@"coverUrl"];
             [dic setObject:videoObj forKey:@"extend"];
-            /*
-            if([[NSFileManager defaultManager] fileExistsAtPath:object.coverPath]){
-                [dic setObject:[NSString stringWithFormat:@"%@",object.coverPath] forKey:@"coverPath"];
-            }else{
-                //如果封面图下跪了，点进视频的时候再去下一把封面图
-                [[NIMSDK sharedSDK].resourceManager download:object.coverUrl filepath:object.coverPath progress:nil completion:^(NSError *error) {
-                    if (!error) {
-                        [dic setObject:[NSString stringWithFormat:@"%@",object.coverPath] forKey:@"coverPath"];
-                    }
-                }];
-            }*/
             if ([[NSFileManager defaultManager] fileExistsAtPath:object.path]) {
                 [dic setObject:[NSString stringWithFormat:@"%@",object.path] forKey:@"mediaPath"];
             }else{
@@ -325,7 +314,7 @@
                         [dic setObject:[NSString stringWithFormat:@"%d",message.isRemoteRead] forKey:@"isRemoteRead"];
                         if (obj.custType == CustomMessgeTypeAccountNotice) {
                             [dic setObject:obj.dataDict  forKey:@"extend"];
-                            [dic setObject:@"account_notice" forKey:@"msgType"];
+                            [dic setObject:@"accountNotice" forKey:@"msgType"];
                         }else{
                             [dic setObject:obj.dataDict  forKey:@"extend"];
                             [dic setObject:@"url" forKey:@"msgType"];
@@ -416,25 +405,17 @@
 -(void)sendImageMessages:(  NSString *)path  displayName:(  NSString *)displayName{
     UIImage *img = [[UIImage alloc]initWithContentsOfFile:path];
     NIMMessage *message = [NIMMessageMaker msgWithImage:img andeSession:self._session];
-//    NIMMessage *message = [NIMMessageMaker msgWithImagePath:path];
     [[NIMSDK sharedSDK].chatManager sendMessage:message toSession:self._session error:nil];
 }
 
 //发送视频
 -(void)sendVideoMessage:(  NSString *)path duration:(  NSString *)duration width:(  NSString *)width height:(  NSString *)height displayName:(  NSString *)displayName{
-//    __weak typeof(self) weakSelf = self;
-//    [self.mediaFetcher fetchMediaFromCamera:^(NSString *path, UIImage *image) {
-        NIMMessage *message;
-//        if (image) {
-//            message = [NIMMessageMaker msgWithImage:image andeSession:_session];
-//        }else{
+    NIMMessage *message;
     if ([path hasPrefix:@"file:///private"]) {
         path = [path stringByReplacingOccurrencesOfString:@"file:///private" withString:@""];
     }
-            message = [NIMMessageMaker msgWithVideo:path andeSession:self._session];
-//        }
-        [[NIMSDK sharedSDK].chatManager sendMessage:message toSession:self._session error:nil];
-//    }];
+    message = [NIMMessageMaker msgWithVideo:path andeSession:self._session];
+    [[NIMSDK sharedSDK].chatManager sendMessage:message toSession:self._session error:nil];
 }
 
 //发送自定义消息
@@ -478,13 +459,6 @@
 -(void)sendTipMessage:( NSString *)content{
     
 }
-//- (NIMKitMediaFetcher *)mediaFetcher
-//{
-//    if (!_mediaFetcher) {
-//        _mediaFetcher = [[NIMKitMediaFetcher alloc] init];
-//    }
-//    return _mediaFetcher;
-//}
 
 //发送红包消息
 - (void)sendRedPacketMessage:(NSString *)type comments:(NSString *)comments serialNo:(NSString *)serialNo{
@@ -1015,7 +989,7 @@
 //                    [dic2 setObject:[NSString stringWithFormat:@"%ld", message.messageType] forKey:@"msgType"];
                     if (obj.custType == CustomMessgeTypeAccountNotice) {
                         [dic2 setObject:obj.dataDict  forKey:@"extend"];
-                        [dic2 setObject:@"account_notice" forKey:@"msgType"];
+                        [dic2 setObject:@"accountNotice" forKey:@"msgType"];
                     }else{
                         [dic2 setObject:obj.dataDict  forKey:@"extend"];
                         [dic2 setObject:@"url" forKey:@"msgType"];
