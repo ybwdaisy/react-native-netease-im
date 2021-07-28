@@ -309,16 +309,17 @@
                     }
                         break;
                     case CustomMessgeTypeUrl: //链接
+                    {
+                        [dic setObject:[NSString stringWithFormat:@"%d",message.isRemoteRead] forKey:@"isRemoteRead"];
+                        [dic setObject:obj.dataDict  forKey:@"extend"];
+                        [dic setObject:@"url" forKey:@"msgType"];
+                    }
+                        break;
                     case CustomMessgeTypeAccountNotice: //账户通知，与账户金额相关变动
                     {
                         [dic setObject:[NSString stringWithFormat:@"%d",message.isRemoteRead] forKey:@"isRemoteRead"];
-                        if (obj.custType == CustomMessgeTypeAccountNotice) {
-                            [dic setObject:obj.dataDict  forKey:@"extend"];
-                            [dic setObject:@"accountNotice" forKey:@"msgType"];
-                        }else{
-                            [dic setObject:obj.dataDict  forKey:@"extend"];
-                            [dic setObject:@"url" forKey:@"msgType"];
-                        }
+                        [dic setObject:obj.dataDict  forKey:@"extend"];
+                        [dic setObject:@"accountNotice" forKey:@"msgType"];
                     }
                         break;
                     case CustomMessgeTypeBusinessCard://名片
@@ -552,7 +553,7 @@
 
 - (void)willSendMessage:(NIMMessage *)message
 {
-    [self refrashMessage:message From:@"send"];
+    [self refreshMessage:message From:@"send"];
     NIMModel *model = [NIMModel initShareMD];
     model.startSend = @{@"start":@"true"};
 }
@@ -560,7 +561,7 @@
 - (void)sendMessage:(NIMMessage *)message didCompleteWithError:(NSError *)error
 {
     if (!error) {
-        [self refrashMessage:message From:@"send"];
+        [self refreshMessage:message From:@"send"];
         [[NSUserDefaults standardUserDefaults]setObject: [NSString stringWithFormat:@"%f", message.timestamp] forKey:@"timestamp"];
     }else{
         NSDictionary *userInfo = error.userInfo;
@@ -573,7 +574,7 @@
         }
         message.localExt = @{@"isFriend":@"NO"};
         [[NIMSDK sharedSDK].conversationManager updateMessage:message forSession:self._session completion:nil];
-        [self refrashMessage:message From:@"send"];
+        [self refreshMessage:message From:@"send"];
     }
     NIMModel *model = [NIMModel initShareMD];
     if ([[NSString stringWithFormat:@"%@", error] isEqualToString:@"(null)"]) {
@@ -586,9 +587,9 @@
 //发送进度
 -(void)sendMessage:(NIMMessage *)message progress:(float)progress
 {
-    [self refrashMessage:message From:@"send" ];
+    [self refreshMessage:message From:@"send" ];
     NIMModel *model = [NIMModel initShareMD];
-    model.endSend = @{@"progress":[NSString stringWithFormat:@"%f",progress]};
+    model.processSend = @{@"progress":[NSString stringWithFormat:@"%f",progress]};
 }
 
 
@@ -597,7 +598,7 @@
 {
     NIMMessage *message = messages.firstObject;
     if ([message.session.sessionId isEqualToString:_sessionID]) {
-        [self refrashMessage:message From:@"receive" ];
+        [self refreshMessage:message From:@"receive" ];
         NIMMessageReceipt *receipt = [[NIMMessageReceipt alloc] initWithMessage:message];
         [[[NIMSDK sharedSDK] chatManager] sendMessageReceipt:receipt completion:nil];
         //标记已读消息
@@ -798,7 +799,7 @@
 }
 
 
--(void)refrashMessage:(NIMMessage *)message From:(NSString *)from {
+-(void)refreshMessage:(NIMMessage *)message From:(NSString *)from {
     NSMutableArray *messageArr = [NSMutableArray array];
     NSMutableDictionary *dic2 = [NSMutableDictionary dictionary];
     NIMUser   *user = [[NIMSDK sharedSDK].userManager userInfo:message.from];
