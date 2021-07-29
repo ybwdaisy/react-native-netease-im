@@ -457,8 +457,12 @@
 }
 
 //发送提醒消息
--(void)sendTipMessage:( NSString *)content{
-    
+-(void)sendTipMessage:(NSString *)content{
+    NIMTipObject *object = [[NIMTipObject alloc]init];
+    NIMMessage *message = [[NIMMessage alloc]init];
+    message.messageObject = object;
+    message.text = content;
+    [[NIMSDK sharedSDK].chatManager sendMessage:message toSession:self._session error:nil];
 }
 
 //发送红包消息

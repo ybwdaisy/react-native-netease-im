@@ -448,7 +448,7 @@ RCT_EXPORT_METHOD(sendCardMessage:(NSString *)type name:(NSString *)name imgPath
 
 //发送提醒消息
 RCT_EXPORT_METHOD(sendTipMessage:(nonnull  NSString *)content){
-    //    [[ConversationViewController initWithConversationViewController]sendMessage:content];
+    [[ConversationViewController initWithConversationViewController]sendTipMessage:content];
 }
 //获取黑名单列表
 RCT_EXPORT_METHOD(startBlackList){

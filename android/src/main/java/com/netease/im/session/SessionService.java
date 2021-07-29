@@ -648,7 +648,6 @@ public class SessionService {
             message.setStatus(MsgStatusEnum.success);
             getMsgService().saveMessageToLocal(message, true);
         } else {
-
             message.setContent(content);
             message.setConfig(config);
             if (local) {
