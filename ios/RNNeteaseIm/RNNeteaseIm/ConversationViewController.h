@@ -31,17 +31,17 @@ typedef void(^Errors)(id erro);
 //发送文本，并指定@用户（@仅适用于群组）
 -(void)sendMessage:(NSString *)mess andApnsMembers:(NSArray *)members;
 //发送图片
--(void)sendImageMessages:(  NSString *)path   displayName:(  NSString *)displayName;
+-(void)sendImageMessages:(NSString *)path   displayName:(NSString *)displayName;
 //发送音频
--(void)sendAudioMessage:(  NSString *)file duration:(  NSString *)duration;
+-(void)sendAudioMessage:(NSString *)file duration:(NSString *)duration;
 //发送视频
--(void)sendVideoMessage:(  NSString *)path duration:(  NSString *)duration width:(  NSString *)width height:(  NSString *)height displayName:(  NSString *)displayName;
+-(void)sendVideoMessage:(NSString *)path duration:(NSString *)duration width:(NSString *)width height:(NSString *)height displayName:(NSString *)displayName;
 //发送自定义消息
 -(void)sendCustomMessage:(NSDictionary *)dataDict;
 //更新自定义消息
 -(void)updateCustomMessage:(NSString *)messageId andAttachment:(NSDictionary *)attachment;
 //发送地理位置消息
--(void)sendLocationMessage:(  NSString *)latitude longitude:(  NSString *)longitude address:(  NSString *)address;
+-(void)sendLocationMessage:(NSString *)latitude longitude:(NSString *)longitude address:(NSString *)address;
 //发送提醒消息
 -(void)sendTipMessage:( NSString *)content;
 //发送红包消息

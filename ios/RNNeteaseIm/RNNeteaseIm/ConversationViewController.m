@@ -203,8 +203,8 @@
             [imgObj setObject:[NSString stringWithFormat:@"%@", [object thumbPath] ] forKey:@"thumbPath"];
             [imgObj setObject:[NSString stringWithFormat:@"%@",[object url] ] forKey:@"url"];
             [imgObj setObject:[NSString stringWithFormat:@"%@",[object displayName] ] forKey:@"displayName"];
-            [imgObj setObject:[NSString stringWithFormat:@"%f",[object size].height] forKey:@"imageHeight"];
-            [imgObj setObject:[NSString stringWithFormat:@"%f",[object size].width] forKey:@"imageWidth"];
+            [imgObj setObject:[NSString stringWithFormat:@"%f",[object size].height] forKey:@"height"];
+            [imgObj setObject:[NSString stringWithFormat:@"%f",[object size].width] forKey:@"width"];
             [dic setObject:imgObj forKey:@"extend"];
         }else if(message.messageType == NIMMessageTypeAudio){
             [dic setObject:@"voice" forKey:@"msgType"];
@@ -220,30 +220,28 @@
         }else if(message.messageType == NIMMessageTypeVideo ){
             [dic setObject:@"video" forKey:@"msgType"];
             NIMVideoObject *object = message.messageObject;
-            
-            [dic setObject:[NSString stringWithFormat:@"%@",object.url ] forKey:@"videoUrl"];
-            [dic setObject:[NSString stringWithFormat:@"%@", object.displayName ] forKey:@"displayName"];
-            [dic setObject:[NSString stringWithFormat:@"%@", object.coverUrl ] forKey:@"coverUrl"];
-            [dic setObject:[NSString stringWithFormat:@"%f",object.coverSize.height ] forKey:@"coverSizeHeight"];
-            [dic setObject:[NSString stringWithFormat:@"%f", object.coverSize.width ] forKey:@"coverSizeWidth"];
-            [dic setObject:[NSString stringWithFormat:@"%ld",object.duration ] forKey:@"duration"];
-            [dic setObject:[NSString stringWithFormat:@"%lld",object.fileLength] forKey:@"fileLength"];
             NSMutableDictionary *videoObj = [NSMutableDictionary dictionary];
-            [videoObj setObject:[NSString stringWithFormat:@"%@",object.url ] forKey:@"videoUrl"];
-            [videoObj setObject:[NSString stringWithFormat:@"%@", object.coverUrl ] forKey:@"coverUrl"];
-            [dic setObject:videoObj forKey:@"extend"];
+            [videoObj setObject:[NSString stringWithFormat:@"%@",object.url ] forKey:@"url"];
+            [videoObj setObject:[NSString stringWithFormat:@"%@",object.path ] forKey:@"path"];
+            [videoObj setObject:[NSString stringWithFormat:@"%@", object.displayName ] forKey:@"displayName"];
+            [videoObj setObject:[NSString stringWithFormat:@"%@", object.coverUrl ] forKey:@"thumbPath"];
+            [videoObj setObject:[NSString stringWithFormat:@"%f",object.coverSize.height ] forKey:@"height"];
+            [videoObj setObject:[NSString stringWithFormat:@"%f", object.coverSize.width ] forKey:@"width"];
+            [videoObj setObject:[NSString stringWithFormat:@"%ld",object.duration ] forKey:@"duration"];
+            [videoObj setObject:[NSString stringWithFormat:@"%lld",object.fileLength] forKey:@"fileLength"];
             if ([[NSFileManager defaultManager] fileExistsAtPath:object.path]) {
-                [dic setObject:[NSString stringWithFormat:@"%@",object.path] forKey:@"mediaPath"];
+                [videoObj setObject:[NSString stringWithFormat:@"%@",object.path] forKey:@"mediaPath"];
             }else{
                 
                 [[NIMObject initNIMObject] downLoadVideo:object Error:^(NSError *error) {
                     if (!error) {
-                        [dic setObject:[NSString stringWithFormat:@"%@",object.path] forKey:@"mediaPath"];
+                        [videoObj setObject:[NSString stringWithFormat:@"%@",object.path] forKey:@"mediaPath"];
                     }
                 } progress:^(float progress) {
                     NSLog(@"视频下载进度%f",progress);
                 }];
             }
+            [dic setObject:videoObj forKey:@"extend"];
         }else if(message.messageType == NIMMessageTypeLocation){
             [dic setObject:@"location" forKey:@"msgType"];
             NIMLocationObject *object = message.messageObject;
@@ -410,12 +408,12 @@
 }
 
 //发送视频
--(void)sendVideoMessage:(  NSString *)path duration:(  NSString *)duration width:(  NSString *)width height:(  NSString *)height displayName:(  NSString *)displayName{
+-(void)sendVideoMessage:(NSString *)path duration:(NSString *)duration width:(NSString *)width height:(NSString *)height displayName:(NSString *)displayName{
     NIMMessage *message;
     if ([path hasPrefix:@"file:///private"]) {
         path = [path stringByReplacingOccurrencesOfString:@"file:///private" withString:@""];
     }
-    message = [NIMMessageMaker msgWithVideo:path andeSession:self._session];
+    message = [NIMMessageMaker msgWithVideo:path displayName:displayName andeSession:self._session];
     [[NIMSDK sharedSDK].chatManager sendMessage:message toSession:self._session error:nil];
 }
 
@@ -866,8 +864,8 @@
         [imgObj setObject:[NSString stringWithFormat:@"%@", [object thumbPath] ] forKey:@"thumbPath"];
         [imgObj setObject:[NSString stringWithFormat:@"%@",[object url] ] forKey:@"url"];
         [imgObj setObject:[NSString stringWithFormat:@"%@",[object displayName] ] forKey:@"displayName"];
-        [imgObj setObject:[NSString stringWithFormat:@"%f",[object size].height] forKey:@"imageHeight"];
-        [imgObj setObject:[NSString stringWithFormat:@"%f",[object size].width] forKey:@"imageWidth"];
+        [imgObj setObject:[NSString stringWithFormat:@"%f",[object size].height] forKey:@"height"];
+        [imgObj setObject:[NSString stringWithFormat:@"%f",[object size].width] forKey:@"width"];
         [dic2 setObject:imgObj forKey:@"extend"];
     }else if(message.messageType == NIMMessageTypeAudio){
         [dic2 setObject:@"voice" forKey:@"msgType"];
@@ -883,36 +881,21 @@
     }else  if(message.messageType == NIMMessageTypeVideo ){
         [dic2 setObject:@"video" forKey:@"msgType"];
         NIMVideoObject *object = message.messageObject;
-        
-        [dic2 setObject:[NSString stringWithFormat:@"%@",object.url ] forKey:@"videoUrl"];
-        [dic2 setObject:[NSString stringWithFormat:@"%@", object.displayName ] forKey:@"displayName"];
-        [dic2 setObject:[NSString stringWithFormat:@"%@", object.coverUrl ] forKey:@"coverUrl"];
-        [dic2 setObject:[NSString stringWithFormat:@"%f",object.coverSize.height ] forKey:@"coverSizeHeight"];
-        [dic2 setObject:[NSString stringWithFormat:@"%f", object.coverSize.width ] forKey:@"coverSizeWidth"];
-        [dic2 setObject:[NSString stringWithFormat:@"%ld",object.duration ] forKey:@"duration"];
-        [dic2 setObject:[NSString stringWithFormat:@"%lld",object.fileLength] forKey:@"fileLength"];
         NSMutableDictionary *videoObj = [NSMutableDictionary dictionary];
-        [videoObj setObject:[NSString stringWithFormat:@"%@",object.url ] forKey:@"videoUrl"];
-        [videoObj setObject:[NSString stringWithFormat:@"%@", object.coverUrl ] forKey:@"coverUrl"];
-        [dic2 setObject:videoObj forKey:@"extend"];
-        /*
-        if([[NSFileManager defaultManager] fileExistsAtPath:object.coverPath]){
-            [dic2 setObject:[NSString stringWithFormat:@"%@",object.coverPath] forKey:@"coverPath"];
-        }else{
-            //如果封面图下跪了，点进视频的时候再去下一把封面图
-            [[NIMSDK sharedSDK].resourceManager download:object.coverUrl filepath:object.coverPath progress:nil completion:^(NSError *error) {
-                if (!error) {
-                    [dic2 setObject:[NSString stringWithFormat:@"%@",object.coverPath] forKey:@"coverPath"];
-                }
-            }];
-        }*/
+        [videoObj setObject:[NSString stringWithFormat:@"%@",object.url ] forKey:@"url"];
+        [videoObj setObject:[NSString stringWithFormat:@"%@",object.path ] forKey:@"path"];
+        [videoObj setObject:[NSString stringWithFormat:@"%@", object.displayName ] forKey:@"displayName"];
+        [videoObj setObject:[NSString stringWithFormat:@"%@", object.coverUrl ] forKey:@"thumbPath"];
+        [videoObj setObject:[NSString stringWithFormat:@"%f",object.coverSize.height ] forKey:@"height"];
+        [videoObj setObject:[NSString stringWithFormat:@"%f", object.coverSize.width ] forKey:@"widht"];
+        [videoObj setObject:[NSString stringWithFormat:@"%ld",object.duration ] forKey:@"duration"];
+        [videoObj setObject:[NSString stringWithFormat:@"%lld",object.fileLength] forKey:@"fileLength"];
         if ([[NSFileManager defaultManager] fileExistsAtPath:object.path]) {
-            [dic2 setObject:[NSString stringWithFormat:@"%@",object.path] forKey:@"mediaPath"];
+            [videoObj setObject:[NSString stringWithFormat:@"%@",object.path] forKey:@"mediaPath"];
         }else{
-            
             [[NIMObject initNIMObject] downLoadVideo:object Error:^(NSError *error) {
                 if (!error) {
-                    [dic2 setObject:[NSString stringWithFormat:@"%@",object.path] forKey:@"mediaPath"];
+                    [videoObj setObject:[NSString stringWithFormat:@"%@",object.path] forKey:@"mediaPath"];
                     NSLog(@"--------下载完成~！！！dic2:%@",dic2);
                     NIMModel *model = [NIMModel initShareMD];
                     model.videoProgress = [NSMutableArray arrayWithObjects:dic2, nil];
@@ -921,6 +904,7 @@
                 NSLog(@"----------下载进度%f   dic2:%@",progress,dic2);
             }];
         }
+        [dic2 setObject:videoObj forKey:@"extend"];
     }else if(message.messageType == NIMMessageTypeLocation){
         [dic2 setObject:@"location" forKey:@"msgType"];
         NIMLocationObject *object = message.messageObject;

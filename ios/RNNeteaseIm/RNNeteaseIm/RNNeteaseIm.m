@@ -377,7 +377,7 @@ RCT_EXPORT_METHOD(updateCustomMessage:(nonnull NSString *)messageId andAttachmen
     [[ConversationViewController initWithConversationViewController]updateCustomMessage:messageId andAttachment:attachment];
 }
 //发送视频消息
-RCT_EXPORT_METHOD(sendVideoMessage:(nonnull  NSString *)file duration:(nonnull  NSString *)duration width:(nonnull  NSString *)width height:(nonnull  NSString *)height displayName:(nonnull  NSString *)displayName){
+RCT_EXPORT_METHOD(sendVideoMessage:(nonnull  NSString *)file duration:(NSString *)duration width:(NSString *)width height:(NSString *)height displayName:(NSString *)displayName){
     [[ConversationViewController initWithConversationViewController]sendVideoMessage:file duration:duration width:width height:height displayName:displayName];
 
 }

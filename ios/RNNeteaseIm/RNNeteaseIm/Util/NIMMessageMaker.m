@@ -99,13 +99,17 @@
     return message;
 }
 
-+ (NIMMessage*)msgWithVideo:(NSString*)filePath andeSession:(NIMSession *)session
++ (NIMMessage*)msgWithVideo:(NSString*)filePath displayName:(NSString *)displayName andeSession:(NIMSession *)session
 {
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
-    NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
+    NSString *dn = displayName;
+    if (dn == nil || [dn isEqualToString:@""]) {
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+        NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
+        dn = [NSString stringWithFormat:@"视频发送于%@",dateString];
+    }
     NIMVideoObject *videoObject = [[NIMVideoObject alloc] initWithSourcePath:filePath];
-    videoObject.displayName = [NSString stringWithFormat:@"视频发送于%@",dateString];
+    videoObject.displayName = dn;
     NIMMessage *message = [[NIMMessage alloc] init];
     message.messageObject = videoObject;
     message.apnsContent = @"发来了一段视频";
