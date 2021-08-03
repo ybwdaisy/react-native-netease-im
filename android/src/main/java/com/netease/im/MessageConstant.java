@@ -93,8 +93,8 @@ public class MessageConstant {
     }
 
     public static class MediaFile {
-        public final static String HEIGHT = "imageHeight";
-        public final static String WIDTH = "imageWidth";
+        public final static String HEIGHT = "height";
+        public final static String WIDTH = "width";
         public final static String DISPLAY_NAME = "displayName";
         public final static String DURATION = "duration";
         public final static String THUMB_PATH = "thumbPath";

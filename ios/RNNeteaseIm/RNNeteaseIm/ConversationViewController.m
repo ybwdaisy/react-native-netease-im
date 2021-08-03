@@ -201,7 +201,11 @@
             [dic setObject:[NSString stringWithFormat:@"%@", [object thumbPath]] forKey:@"mediaPath"];
             NSMutableDictionary *imgObj = [NSMutableDictionary dictionary];
             [imgObj setObject:[NSString stringWithFormat:@"%@", [object thumbPath] ] forKey:@"thumbPath"];
-            [imgObj setObject:[NSString stringWithFormat:@"%@",[object url] ] forKey:@"url"];
+            NSString *url = [object url];
+            if (url == nil) {
+                url = @"";
+            }
+            [imgObj setObject:[NSString stringWithFormat:@"%@",url ] forKey:@"url"];
             [imgObj setObject:[NSString stringWithFormat:@"%@",[object displayName] ] forKey:@"displayName"];
             [imgObj setObject:[NSString stringWithFormat:@"%f",[object size].height] forKey:@"height"];
             [imgObj setObject:[NSString stringWithFormat:@"%f",[object size].width] forKey:@"width"];
@@ -213,7 +217,7 @@
             [dic setObject:[NSString stringWithFormat:@"%@",object.url] forKey:@"url"];
             [dic setObject:[NSNumber numberWithInteger:object.duration] forKey:@"duration"];
             NSMutableDictionary *voiceObj = [NSMutableDictionary dictionary];
-            [voiceObj setObject:[NSString stringWithFormat:@"%@", [object url]] forKey:@"url"];
+            [voiceObj setObject:[NSString stringWithFormat:@"%@", object.url] forKey:@"url"];
             [voiceObj setObject:[NSString stringWithFormat:@"%zd",(object.duration/1000)] forKey:@"duration"];
             [voiceObj setObject:[NSNumber  numberWithBool:message.isPlayed] forKey:@"isPlayed"];
             [dic setObject:voiceObj forKey:@"extend"];
@@ -221,7 +225,11 @@
             [dic setObject:@"video" forKey:@"msgType"];
             NIMVideoObject *object = message.messageObject;
             NSMutableDictionary *videoObj = [NSMutableDictionary dictionary];
-            [videoObj setObject:[NSString stringWithFormat:@"%@",object.url ] forKey:@"url"];
+            NSString *url = object.url;
+            if (url == nil) {
+                url = @"";
+            }
+            [videoObj setObject:[NSString stringWithFormat:@"%@",url ] forKey:@"url"];
             [videoObj setObject:[NSString stringWithFormat:@"%@",object.path ] forKey:@"path"];
             [videoObj setObject:[NSString stringWithFormat:@"%@", object.displayName ] forKey:@"displayName"];
             [videoObj setObject:[NSString stringWithFormat:@"%@", object.coverUrl ] forKey:@"thumbPath"];
@@ -862,7 +870,11 @@
         [dic2 setObject:[NSString stringWithFormat:@"%@", [object thumbPath]] forKey:@"mediaPath"];
         NSMutableDictionary *imgObj = [NSMutableDictionary dictionary];
         [imgObj setObject:[NSString stringWithFormat:@"%@", [object thumbPath] ] forKey:@"thumbPath"];
-        [imgObj setObject:[NSString stringWithFormat:@"%@",[object url] ] forKey:@"url"];
+        NSString *url = [object url];
+        if (url == nil) {
+            url = @"";
+        }
+        [imgObj setObject:[NSString stringWithFormat:@"%@",url] forKey:@"url"];
         [imgObj setObject:[NSString stringWithFormat:@"%@",[object displayName] ] forKey:@"displayName"];
         [imgObj setObject:[NSString stringWithFormat:@"%f",[object size].height] forKey:@"height"];
         [imgObj setObject:[NSString stringWithFormat:@"%f",[object size].width] forKey:@"width"];
@@ -882,7 +894,11 @@
         [dic2 setObject:@"video" forKey:@"msgType"];
         NIMVideoObject *object = message.messageObject;
         NSMutableDictionary *videoObj = [NSMutableDictionary dictionary];
-        [videoObj setObject:[NSString stringWithFormat:@"%@",object.url ] forKey:@"url"];
+        NSString *url = object.url;
+        if (url == nil) {
+            url = @"";
+        }
+        [videoObj setObject:[NSString stringWithFormat:@"%@",url ] forKey:@"url"];
         [videoObj setObject:[NSString stringWithFormat:@"%@",object.path ] forKey:@"path"];
         [videoObj setObject:[NSString stringWithFormat:@"%@", object.displayName ] forKey:@"displayName"];
         [videoObj setObject:[NSString stringWithFormat:@"%@", object.coverUrl ] forKey:@"thumbPath"];

@@ -131,10 +131,10 @@ public class ReactCache {
                     NimUserInfoCache nimUserInfoCache = NimUserInfoCache.getInstance();
                     imagePath = nimUserInfoCache.getAvatar(contactId);
                     // 扩展字段
-                     ext = nimUserInfoCache.getExtension(contactId);
-                     if(ext != null){
-                         map.putString("ext", ext);
-                     }
+                    ext = nimUserInfoCache.getExtension(contactId);
+                    if(ext != null){
+                        map.putString("ext", ext);
+                    }
                     map.putString("mute", boolean2String(NIMClient.getService(FriendService.class).isNeedMessageNotify(contactId)));
                     name = nimUserInfoCache.getUserDisplayName(contactId);
                 } else if (sessionType == SessionTypeEnum.Team) {
