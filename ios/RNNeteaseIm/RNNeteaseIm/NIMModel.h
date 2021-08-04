@@ -20,7 +20,7 @@ typedef void(^onSuccess)(NSInteger index,id param);
 @property(nonatomic,strong)NSMutableArray *notiArr;
 @property(nonatomic,assign)NSInteger unreadCount;
 @property(nonatomic,strong)NSMutableArray *teamArr;
-@property(nonatomic,assign)NSMutableArray *ResorcesArr;
+@property(nonatomic,assign)NSMutableArray *resourceArr;
 @property(nonatomic,strong)NSMutableArray *sendState;
 @property(nonatomic,strong)NSDictionary *startSend;
 @property(nonatomic,strong)NSDictionary *endSend;

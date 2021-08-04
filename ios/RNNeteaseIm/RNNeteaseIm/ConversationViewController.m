@@ -991,7 +991,6 @@
                 case CustomMessgeTypeUrl: //链接
                 {
                     [dic2 setObject:[NSString stringWithFormat:@"%d",message.isRemoteRead] forKey:@"isRemoteRead"];
-//                    [dic2 setObject:[NSString stringWithFormat:@"%ld", message.messageType] forKey:@"msgType"];
                     if (obj.custType == CustomMessgeTypeAccountNotice) {
                         [dic2 setObject:obj.dataDict  forKey:@"extend"];
                         [dic2 setObject:@"accountNotice" forKey:@"msgType"];
@@ -1030,7 +1029,7 @@
     //接收消息
     NIMModel *model = [NIMModel initShareMD];
     if ([from isEqualToString:@"receive"]) {
-        model.ResorcesArr = messageArr;
+        model.resourceArr = messageArr;
     }else if ([from isEqualToString:@"send"]){
         //发送消息
         model.sendState = messageArr;

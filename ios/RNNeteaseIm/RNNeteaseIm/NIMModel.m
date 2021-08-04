@@ -19,13 +19,6 @@
     return nimModel;
 }
 
-//-(void)setRecentListArr:(NSMutableArray *)recentListArr{
-//    if (_recentListArr != recentListArr) {
-//        _recentListArr = recentListArr;
-//        self.myBlock(1, recentListArr);
-//    }
-//}
-
 - (void)setRecentDict:(NSDictionary *)recentDict{
     if ((_recentDict != recentDict)&&(recentDict.count)) {
         _recentDict = recentDict;
@@ -77,9 +70,9 @@
     
 }
 //
--(void)setResorcesArr:(NSMutableArray *)ResorcesArr{
+-(void)setResourceArr:(NSMutableArray *)resourceArr{
     if (self.myBlock) {
-        self.myBlock(7, ResorcesArr);
+        self.myBlock(7, resourceArr);
     }
 }
 //开始发送
