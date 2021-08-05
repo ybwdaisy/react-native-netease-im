@@ -565,7 +565,7 @@
 {
     [self refreshMessage:message From:@"send"];
     NIMModel *model = [NIMModel initShareMD];
-    model.startSend = @{@"start":@"true"};
+    model.startSend = @{@"start":@YES};
 }
 //发送结果
 - (void)sendMessage:(NIMMessage *)message didCompleteWithError:(NSError *)error
@@ -588,18 +588,21 @@
     }
     NIMModel *model = [NIMModel initShareMD];
     if ([[NSString stringWithFormat:@"%@", error] isEqualToString:@"(null)"]) {
-        model.endSend = @{@"end":@"true",@"error":@""};
+        model.endSend = @{@"end":@YES,@"error":@""};
     }else{
-        model.endSend = @{@"end":@"true",@"error":[NSString stringWithFormat:@"%@", error]};
+        model.endSend = @{@"end":@YES,@"error":[NSString stringWithFormat:@"%@", error]};
     }
 }
 
 //发送进度
 -(void)sendMessage:(NIMMessage *)message progress:(float)progress
 {
-    [self refreshMessage:message From:@"send" ];
+    [self refreshMessage:message From:@"send"];
     NIMModel *model = [NIMModel initShareMD];
-    model.processSend = @{@"progress":[NSString stringWithFormat:@"%f",progress]};
+    model.processSend = @{
+        @"uuid": message.messageId,
+        @"progress": @(progress)
+    };
 }
 
 

@@ -56,6 +56,8 @@ import com.netease.nimlib.sdk.team.model.TeamMember;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 import com.netease.nimlib.sdk.uinfo.model.UserInfo;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -1060,10 +1062,11 @@ public class ReactCache {
 
     public static Object createAttachmentProgress(AttachmentProgress attachmentProgress) {
         WritableMap result = Arguments.createMap();
-        result.putString("_id", attachmentProgress.getUuid());
-        result.putString("total", Long.toString(attachmentProgress.getTotal()));
-        result.putString("transferred", Long.toString(attachmentProgress.getTransferred()));
-
+        result.putString("uuid", attachmentProgress.getUuid());
+        BigDecimal transferred = new BigDecimal(attachmentProgress.getTransferred());
+        BigDecimal total = new BigDecimal(attachmentProgress.getTotal());
+        Double progress = transferred.divide(total, 10, RoundingMode.HALF_UP).doubleValue();
+        result.putDouble("progress", progress);
         return result;
     }
 }

@@ -798,8 +798,8 @@ RCT_EXPORT_METHOD(cleanCache){
                 [_bridge.eventDispatcher sendDeviceEventWithName:@"observeEndSend" body:param];
                 break;
             case 10:
-                //发送进度（'附件图片等'）
-                [_bridge.eventDispatcher sendDeviceEventWithName:@"observeProgressSend" body:param];
+                //发送附件进度
+                [_bridge.eventDispatcher sendDeviceEventWithName:@"observeAttachmentProgress" body:param];
                 break;
             case 11:
                 //已读回执

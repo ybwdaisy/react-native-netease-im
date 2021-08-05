@@ -946,7 +946,7 @@ public class SessionService {
         }, register);
     }
     // 下载附件，参数1位消息对象，参数2为是下载缩略图还是下载原图。
-// 因为下载的文件可能会很大，这个接口返回类型为 AbortableFuture ，允许用户中途取消下载。
+    // 因为下载的文件可能会很大，这个接口返回类型为 AbortableFuture ，允许用户中途取消下载。
 
     public void downloadAttachment(IMMessage message, boolean isThumb) {
         if (isOriginImageHasDownloaded(message)) {
