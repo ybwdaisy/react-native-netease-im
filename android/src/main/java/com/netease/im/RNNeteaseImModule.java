@@ -1142,7 +1142,7 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule implements Lif
 //    height, // 视频高度
 //    displayName // 视频显示名，可为空
     @ReactMethod
-    public void sendVideoMessage(String file, String duration, String width, String height, String displayName, final Promise promise) {
+    public void sendVideoMessage(String file, String duration, int width, int height, String displayName, final Promise promise) {
         sessionService.sendVideoMessage(file, duration, width, height, displayName, new SessionService.OnSendMessageListener() {
             @Override
             public int onResult(int code, IMMessage message) {
