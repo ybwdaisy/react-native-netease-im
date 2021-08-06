@@ -232,7 +232,11 @@
             [videoObj setObject:[NSString stringWithFormat:@"%@",url ] forKey:@"url"];
             [videoObj setObject:[NSString stringWithFormat:@"%@",object.path ] forKey:@"path"];
             [videoObj setObject:[NSString stringWithFormat:@"%@", object.displayName ] forKey:@"displayName"];
-            [videoObj setObject:[NSString stringWithFormat:@"%@", object.coverUrl ] forKey:@"thumbPath"];
+            NSString *thumbPath = object.coverPath;
+            if (thumbPath == nil) {
+                thumbPath = @"";
+            }
+            [videoObj setObject:[NSString stringWithFormat:@"%@", thumbPath ] forKey:@"thumbPath"];
             [videoObj setObject:[NSString stringWithFormat:@"%f",object.coverSize.height ] forKey:@"height"];
             [videoObj setObject:[NSString stringWithFormat:@"%f", object.coverSize.width ] forKey:@"width"];
             [videoObj setObject:[NSString stringWithFormat:@"%ld",object.duration ] forKey:@"duration"];
@@ -426,7 +430,7 @@
 }
 
 //发送自定义消息
--(void)sendCustomMessage:(NSDictionary *)dataDict{
+-(void)sendCustomMessage:(NSDictionary *)dataDict{ 
     [self sendCustomMessage:CustomMessgeTypeCustom data:dataDict];
 }
 
@@ -904,9 +908,13 @@
         [videoObj setObject:[NSString stringWithFormat:@"%@",url ] forKey:@"url"];
         [videoObj setObject:[NSString stringWithFormat:@"%@",object.path ] forKey:@"path"];
         [videoObj setObject:[NSString stringWithFormat:@"%@", object.displayName ] forKey:@"displayName"];
-        [videoObj setObject:[NSString stringWithFormat:@"%@", object.coverUrl ] forKey:@"thumbPath"];
+        NSString *thumbPath = object.coverPath;
+        if (thumbPath == nil) {
+            thumbPath = @"";
+        }
+        [videoObj setObject:[NSString stringWithFormat:@"%@", thumbPath ] forKey:@"thumbPath"];
         [videoObj setObject:[NSString stringWithFormat:@"%f",object.coverSize.height ] forKey:@"height"];
-        [videoObj setObject:[NSString stringWithFormat:@"%f", object.coverSize.width ] forKey:@"widht"];
+        [videoObj setObject:[NSString stringWithFormat:@"%f", object.coverSize.width ] forKey:@"width"];
         [videoObj setObject:[NSString stringWithFormat:@"%ld",object.duration ] forKey:@"duration"];
         [videoObj setObject:[NSString stringWithFormat:@"%lld",object.fileLength] forKey:@"fileLength"];
         if ([[NSFileManager defaultManager] fileExistsAtPath:object.path]) {

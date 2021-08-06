@@ -680,7 +680,7 @@ public class SessionService {
         sendMessageSelf(message, onSendMessageListener, false);
     }
 
-    public void sendVideoMessage(String file, String duration, int width, int height, String displayName, OnSendMessageListener onSendMessageListener) {
+    public void sendVideoMessage(String file, String duration, String width, String height, String displayName, OnSendMessageListener onSendMessageListener) {
         file = Uri.parse(file).getPath();
         String md5 = TextUtils.isEmpty(displayName) ? MD5.getStreamMD5(file) : displayName;
         File f = new File(file);
@@ -690,7 +690,7 @@ public class SessionService {
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-        IMMessage message = MessageBuilder.createVideoMessage(sessionId, sessionTypeEnum, f, durationL, width, height, md5);
+        IMMessage message = MessageBuilder.createVideoMessage(sessionId, sessionTypeEnum, f, durationL, Integer.valueOf(width).intValue(), Integer.valueOf(height).intValue(), md5);
         sendMessageSelf(message, onSendMessageListener, false);
     }
 
