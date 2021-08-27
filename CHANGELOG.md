@@ -1,3 +1,5 @@
+#### 2021-08-27
+- feat: 支持自定义消息等
 #### 2021-07-21
 - fix: android fetchUserInfo 报 java.lang.NullPointerException 错误
 
