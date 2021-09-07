@@ -78,7 +78,7 @@ public class ReactNativeJson {
 					object.put(key, readableMap.getBoolean(key));
 					break;
 				case Number:
-					object.put(key, readableMap.getDouble(key));
+					object.put(key, readableMap.getInt(key));
 					break;
 				case String:
 					object.put(key, readableMap.getString(key));
@@ -104,7 +104,7 @@ public class ReactNativeJson {
 					array.put(readableArray.getBoolean(i));
 					break;
 				case Number:
-					array.put(readableArray.getDouble(i));
+					array.put(readableArray.getInt(i));
 					break;
 				case String:
 					array.put(readableArray.getString(i));

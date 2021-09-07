@@ -1,1 +1,4 @@
 android/build
+android/.project
+android/.settings
+android/.gradle
