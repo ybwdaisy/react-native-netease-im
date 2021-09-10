@@ -1,5 +1,5 @@
 {
-  "name": "react-native-neteaseim",
+  "name": "@ybwdaisy/react-native-netease-im",
   "version": "3.1.0",
   "description": "网易云信ReactNative插件",
   "main": "index.js",

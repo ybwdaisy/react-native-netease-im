@@ -4,7 +4,7 @@ require "json"
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
 Pod::Spec.new do |s|
-  s.name              = "react-native-neteaseim"
+  s.name              = "react-native-netease-im"
   s.version           = package['version']
   s.summary           = "A React component for netease im."
   s.homepage          = "https://github.com/ybwdaisy"
