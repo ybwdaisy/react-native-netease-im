@@ -12,14 +12,14 @@ class Friend {
    * @returns {*} @see observeFriend
    */
   startFriendList() {
-    return RNNeteaseIm.startFriendList();
+    return RNNeteaseIm?.startFriendList();
   }
   /**
    * 退出好友
    * @returns {*}
    */
   stopFriendList() {
-    return RNNeteaseIm.stopFriendList();
+    return RNNeteaseIm?.stopFriendList();
   }
   /**
    * 获取本地用户资料
@@ -27,7 +27,7 @@ class Friend {
    * @returns {*}
    */
   getUserInfo(contactId) {
-    return RNNeteaseIm.getUserInfo(contactId);
+    return RNNeteaseIm?.getUserInfo(contactId);
   }
   /**
    * 获取服务器用户资料
@@ -35,7 +35,7 @@ class Friend {
    * @returns {*}
    */
   fetchUserInfo(contactId) {
-    return RNNeteaseIm.fetchUserInfo(contactId);
+    return RNNeteaseIm?.fetchUserInfo(contactId);
   }
   /**
    * 批量获取服务器用户资料
@@ -43,7 +43,7 @@ class Friend {
    * @returns {*}
    */
   batchFetchUserInfo(accids){
-    return RNNeteaseIm.batchFetchUserInfo(accids)
+    return RNNeteaseIm?.batchFetchUserInfo(accids)
   }
   /**
    * 保存用户资料
@@ -51,7 +51,7 @@ class Friend {
    * @returns {*}
    */
   updateMyUserInfo(userInFo) {
-    return RNNeteaseIm.updateMyUserInfo(userInFo);
+    return RNNeteaseIm?.updateMyUserInfo(userInFo);
   }
   /**
    * 保存好友备注
@@ -59,7 +59,7 @@ class Friend {
    * @returns {*}
    */
   updateUserInfo(contactId, alias) {
-    return RNNeteaseIm.updateUserInfo(contactId, alias);
+    return RNNeteaseIm?.updateUserInfo(contactId, alias);
   }
   /**
    * 好友列表
@@ -67,7 +67,7 @@ class Friend {
    * @returns {*}
    */
   getFriendList(keyword) {
-    return RNNeteaseIm.getFriendList(keyword);
+    return RNNeteaseIm?.getFriendList(keyword);
   }
   /**
    * 添加好友
@@ -76,7 +76,7 @@ class Friend {
    * @returns {*}
    */
   addFriend(contactId, msg) {
-    return RNNeteaseIm.addFriend(contactId, msg);
+    return RNNeteaseIm?.addFriend(contactId, msg);
   }
 
   /**
@@ -87,7 +87,7 @@ class Friend {
    * @returns {*}
    */
   addFriendWithType(contactId, verifyType, msg) {
-    return RNNeteaseIm.addFriendWithType(contactId, verifyType, msg);
+    return RNNeteaseIm?.addFriendWithType(contactId, verifyType, msg);
   }
   /**
    * 删除好友
@@ -95,42 +95,42 @@ class Friend {
    * @returns {*}
    */
   deleteFriend(contactId) {
-    return RNNeteaseIm.deleteFriend(contactId);
+    return RNNeteaseIm?.deleteFriend(contactId);
   }
   /**
    * 进入黑名单列表
    * @returns {*} @see observeBlackList
    */
   startBlackList() {
-    return RNNeteaseIm.startBlackList();
+    return RNNeteaseIm?.startBlackList();
   }
   /**
    * 退出黑名单列表
    * @returns {*}
    */
   stopBlackList() {
-    return RNNeteaseIm.stopBlackList();
+    return RNNeteaseIm?.stopBlackList();
   }
   /**
    * 获取黑名单列表
    * @returns {*}
    */
   getBlackList() {
-    return RNNeteaseIm.getBlackList();
+    return RNNeteaseIm?.getBlackList();
   }
   /**
    * 加入黑名单
    * @returns {*}
    */
   addToBlackList(contactId) {
-    return RNNeteaseIm.addToBlackList(contactId);
+    return RNNeteaseIm?.addToBlackList(contactId);
   }
   /**
    * 移出黑名单
    * @returns {*}
    */
   removeFromBlackList(contactId) {
-    return RNNeteaseIm.removeFromBlackList(contactId);
+    return RNNeteaseIm?.removeFromBlackList(contactId);
   }
 }
 export default new Friend();

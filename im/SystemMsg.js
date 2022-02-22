@@ -11,35 +11,35 @@ class SystemMsg {
    * @returns {*} @see observeReceiveSystemMsg
    */
   startSystemMsg() {
-    return RNNeteaseIm.startSystemMsg();
+    return RNNeteaseIm?.startSystemMsg();
   }
   /**
    * 退出系统通知消息
    * @returns {*}
    */
   stopSystemMsg() {
-    return RNNeteaseIm.stopSystemMsg();
+    return RNNeteaseIm?.stopSystemMsg();
   }
   /**
    * 开始系统通知计数监听
    * @returns {*} @see observeUnreadCountChange
    */
   startSystemMsgUnreadCount() {
-    return RNNeteaseIm.startSystemMsgUnreadCount();
+    return RNNeteaseIm?.startSystemMsgUnreadCount();
   }
   /**
    * 停止系统通知计数监听
    * @returns {*}
    */
   stopSystemMsgUnreadCount() {
-    return RNNeteaseIm.stopSystemMsgUnreadCount();
+    return RNNeteaseIm?.stopSystemMsgUnreadCount();
   }
   /**
    * 查询系统通知列表
    * @returns {*}
    */
   querySystemMessagesBlock(offset, limit) {
-    return RNNeteaseIm.querySystemMessagesBlock(offset, limit);
+    return RNNeteaseIm?.querySystemMessagesBlock(offset, limit);
   }
   /**
    * 通过/拒绝 系统通知
@@ -60,7 +60,7 @@ class SystemMsg {
     timestamp,
   ) {
     if (type === '0') {
-      return RNNeteaseIm.passApply(
+      return RNNeteaseIm?.passApply(
         messageId,
         targetId,
         fromAccount,
@@ -68,7 +68,7 @@ class SystemMsg {
         timestamp,
       );
     } else if (type === '2') {
-      return RNNeteaseIm.acceptInvite(
+      return RNNeteaseIm?.acceptInvite(
         messageId,
         targetId,
         fromAccount,
@@ -76,7 +76,7 @@ class SystemMsg {
         timestamp,
       );
     } else if (type === '5') {
-      return RNNeteaseIm.ackAddFriendRequest(
+      return RNNeteaseIm?.ackAddFriendRequest(
         messageId,
         fromAccount,
         pass,
@@ -95,9 +95,9 @@ class SystemMsg {
    */
   ackAddFriendRequest(messageId, contactId, pass, timestamp) {
     if (Platform.OS === 'ios') {
-      return RNNeteaseIm.ackAddFriendRequest(contactId, pass, timestamp);
+      return RNNeteaseIm?.ackAddFriendRequest(contactId, pass, timestamp);
     }
-    return RNNeteaseIm.ackAddFriendRequest(
+    return RNNeteaseIm?.ackAddFriendRequest(
       messageId,
       contactId,
       pass,
@@ -115,7 +115,7 @@ class SystemMsg {
    * @returns {*}
    */
   passApply(messageId, targetId, fromAccount, pass, timestamp) {
-    return RNNeteaseIm.passApply(
+    return RNNeteaseIm?.passApply(
       messageId,
       targetId,
       fromAccount,
@@ -134,7 +134,7 @@ class SystemMsg {
    * @returns {*}
    */
   acceptInvite(messageId, targetId, fromAccount, pass, timestamp) {
-    return RNNeteaseIm.acceptInvite(
+    return RNNeteaseIm?.acceptInvite(
       messageId,
       targetId,
       fromAccount,
@@ -149,7 +149,7 @@ class SystemMsg {
    * @returns {*}
    */
   deleteSystemMessage(fromAccount, timestamp) {
-    return RNNeteaseIm.deleteSystemMessage(fromAccount, timestamp);
+    return RNNeteaseIm?.deleteSystemMessage(fromAccount, timestamp);
   }
 
   /**
@@ -157,7 +157,7 @@ class SystemMsg {
    * @returns {*}
    */
   clearSystemMessages() {
-    return RNNeteaseIm.clearSystemMessages();
+    return RNNeteaseIm?.clearSystemMessages();
   }
 
   /**
@@ -165,7 +165,7 @@ class SystemMsg {
    * @returns {*}
    */
   resetSystemMessageUnreadCount() {
-    return RNNeteaseIm.resetSystemMessageUnreadCount();
+    return RNNeteaseIm?.resetSystemMessageUnreadCount();
   }
 }
 export default new SystemMsg();
