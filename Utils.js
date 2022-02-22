@@ -14,14 +14,14 @@ class Utils {
    * 清除数据缓存
    */
   cleanCache() {
-    return RNNeteaseIm.cleanCache();
+    return RNNeteaseIm?.cleanCache();
   }
 
   /**
    * 获取缓存大小
    */
   getCacheSize() {
-    return RNNeteaseIm.getCacheSize();
+    return RNNeteaseIm?.getCacheSize();
   }
 
 
@@ -30,7 +30,7 @@ class Utils {
    * @returns {*}
    */
   play(filepath) {
-    return RNNeteaseIm.play(filepath);
+    return RNNeteaseIm?.play(filepath);
   }
 
   /**
@@ -41,9 +41,9 @@ class Utils {
    */
   playLocacl(name, type) {
     if (Platform.OS === 'ios') {
-      return RNNeteaseIm.playLocal(name, type);
+      return RNNeteaseIm?.playLocal(name, type);
     }
-    return RNNeteaseIm.playLocal('assets:///' + name + '.' + type, type);
+    return RNNeteaseIm?.playLocal('assets:///' + name + '.' + type, type);
   }
 
   /**
@@ -51,7 +51,7 @@ class Utils {
    * @returns {*}
    */
   stopPlay() {
-    return RNNeteaseIm.stopPlay();
+    return RNNeteaseIm?.stopPlay();
   }
 
   sortPinYin(o, key) {
@@ -63,7 +63,7 @@ class Utils {
    * @returns {*}
    */
   fetchNetInfo() {
-    return RNNeteaseIm.fetchNetInfo();
+    return RNNeteaseIm?.fetchNetInfo();
   }
 }
 
