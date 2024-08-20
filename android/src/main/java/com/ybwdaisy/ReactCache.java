@@ -7,6 +7,9 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.friend.FriendService;
+import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.attachment.AudioAttachment;
 import com.netease.nimlib.sdk.msg.attachment.ImageAttachment;
 import com.netease.nimlib.sdk.msg.attachment.LocationAttachment;
@@ -17,9 +20,11 @@ import com.netease.nimlib.sdk.msg.constant.MsgStatusEnum;
 import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
+import com.netease.nimlib.sdk.msg.model.RecentContact;
 import com.ybwdaisy.Attachment.CustomAttachment;
 import com.ybwdaisy.Attachment.DefaultCustomAttachment;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -281,5 +286,107 @@ public class ReactCache {
 		return bool ? Integer.toString(1) : Integer.toString(0);
 	}
 
+	// ******************************* 处理会话 *********************************
+	public static Object createRecentList(List<RecentContact> recents) {
+		WritableMap writableMap = Arguments.createMap();
+		WritableArray array = Arguments.createArray();
+		int unreadNumTotal = 0;
+		if (recents != null && recents.size() > 0) {
+			WritableMap map;
+			for (RecentContact contact : recents) {
+				map = Arguments.createMap();
+				String contactId = contact.getContactId();
+				unreadNumTotal += contact.getUnreadCount();
+				map.putString(MessageConstant.Contact.CONTACT_ID, contactId);
+				map.putString(MessageConstant.Contact.UNREAD_COUNT, String.valueOf(contact.getUnreadCount()));
+				String name = "";
+				SessionTypeEnum sessionType = contact.getSessionType();
+				String imagePath = "";
+				String ext = null;
+				if (sessionType == SessionTypeEnum.P2P) {
+					map.putString(MessageConstant.Contact.TEAM_TYPE, "-1");
+					UserInfoCache userInfoCache = UserInfoCache.getInstance();
+					imagePath = userInfoCache.getAvatar(contactId);
+					ext = userInfoCache.getExtension(contactId);
+					if(ext != null){
+						map.putString(MessageConstant.Contact.EXT, ext);
+					}
+					map.putString(MessageConstant.Contact.MUTE, boolean2String(NIMClient.getService(FriendService.class).isNeedMessageNotify(contactId)));
+					name = userInfoCache.getUserDisplayName(contactId);
+				}
+				map.putString(MessageConstant.Contact.IMAGE_PATH, imagePath);
+				map.putString(MessageConstant.Contact.NAME, name);
+				map.putString(MessageConstant.Contact.SESSION_TYPE, Integer.toString(contact.getSessionType().getValue()));
+				map.putString(MessageConstant.Contact.MSG_TYPE, Integer.toString(contact.getMsgType().getValue()));
+				map.putString(MessageConstant.Contact.MSG_STATUS, Integer.toString(contact.getMsgStatus().getValue()));
+				map.putString(MessageConstant.Contact.MESSAGE_ID, contact.getRecentMessageId());
 
+				String fromAccount = contact.getFromAccount();
+				map.putString(MessageConstant.Contact.FROM_ACCOUNT, fromAccount);
+
+				String content = contact.getContent();
+				switch (contact.getMsgType()) {
+					case text:
+						content = contact.getContent();
+						break;
+					case image:
+						content = "[图片]";
+						break;
+					case video:
+						content = "[视频]";
+						break;
+					case audio:
+						content = "[语音消息]";
+						break;
+					case location:
+						content = "[位置]";
+						break;
+					case tip:
+						List<String> uuids = new ArrayList<>();
+						uuids.add(contact.getRecentMessageId());
+						List<IMMessage> messages = NIMClient.getService(MsgService.class).queryMessageListByUuidBlock(uuids);
+						if (messages != null && messages.size() > 0) {
+							content = messages.get(0).getContent();
+						}
+						break;
+					default:
+						break;
+				}
+				map.putString(MessageConstant.Contact.TIME, TimeUtil.getTimeShowString(contact.getTime(), true));
+				String fromNick = "";
+				if (!TextUtils.isEmpty(fromAccount)) {
+					try {
+						fromNick = contact.getFromNick();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+					fromNick = TextUtils.isEmpty(fromNick) ? UserInfoCache.getInstance().getUserDisplayName(fromAccount) : fromNick;
+					map.putString(MessageConstant.Contact.NICK, fromNick);
+				}
+				CustomAttachment attachment = null;
+				try {
+					if (contact.getMsgType() == MsgTypeEnum.custom) {
+						attachment = (CustomAttachment) contact.getAttachment();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				if (attachment != null) {
+					map.putString(MessageConstant.Contact.TYPE, attachment.getType());
+					if (attachment instanceof DefaultCustomAttachment) {
+						content = ((DefaultCustomAttachment) attachment).getRecentContent();
+						if (TextUtils.isEmpty(content)) {
+							content = "[未知消息]";
+						}
+					}
+				}
+				map.putString(MessageConstant.Contact.CONTENT, content);
+				array.pushMap(map);
+			}
+		}
+		writableMap.putArray(MessageConstant.Contact.RECENTS, array);
+		writableMap.putString(MessageConstant.Contact.UNREAD_COUNT, Integer.toString(unreadNumTotal));
+		return writableMap;
+	}
 }

@@ -46,6 +46,26 @@ public class MessageConstant {
 		public static final String TIME = "time";
 	}
 
+	public class Contact {
+		public static final String CONTACT_ID = "contactId";
+		public static final String UNREAD_COUNT = "unreadCount";
+		public static final String TEAM_TYPE = "teamType";
+		public static final String EXT = "ext";
+		public static final String MUTE = "mute";
+		public static final String IMAGE_PATH = "imagePath";
+		public static final String NAME = "name";
+		public static final String SESSION_TYPE = "sessionType";
+		public static final String MSG_TYPE = "msgType";
+		public static final String MSG_STATUS = "msgStatus";
+		public static final String MESSAGE_ID = "messageId";
+		public static final String FROM_ACCOUNT = "fromAccount";
+		public static final String TIME = "time";
+		public static final String NICK = "nick";
+		public static final String CONTENT = "content";
+		public static final String TYPE = "TYPE";
+		public static final String RECENTS = "recents";
+	}
+
 
 	public static class User {
 		public static final String USER_ID = "_id";
@@ -84,19 +104,11 @@ public class MessageConstant {
 		public final static String observeLoginSyncDataStatus = "observeLoginSyncDataStatus";//登录状态
 		public final static String observeRecentContact = "observeRecentContact";//'最近会话'
 		public final static String observeFriend = "observeFriend";//'联系人'
-		public final static String observeTeam = "observeTeam";//'群组'
 		public final static String observeReceiveMessage = "observeReceiveMessage";//'接收消息'
 		public final static String observeDeleteMessage = "observeDeleteMessage";//'撤销后删除消息'
 		public final static String observeReceiveSystemMsg = "observeReceiveSystemMsg";//'系统通知'
 		public final static String observeMsgStatus = "observeMsgStatus";//'发送消息状态变化'
-		public final static String observeAudioRecord = "observeAudioRecord";//'录音状态'
 		public final static String observeUnreadCountChange = "observeUnreadCountChange";//'未读数变化'
-		public final static String observeBlackList = "observeBlackList";//'黑名单'
-		public final static String observeAttachmentProgress = "observeAttachmentProgress";//'上传下载进度'
-		public final static String observeOnKick = "observeOnKick";//'被踢出'
-		public final static String observeAccountNotice = "observeAccountNotice";//'账户变动通知'
-		public final static String observeLaunchPushEvent = "observeLaunchPushEvent";//''
-		public final static String observeBackgroundPushEvent = "observeBackgroundPushEvent";//''
 		public final static String observeUserInfoUpdate = "observeUserInfoUpdate";
 	}
 }

@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
@@ -14,6 +15,9 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
+import com.netease.nimlib.sdk.RequestCallbackWrapper;
+import com.netease.nimlib.sdk.ResponseCode;
+import com.netease.nimlib.sdk.friend.FriendService;
 import com.netease.nimlib.sdk.msg.MessageBuilder;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.MsgServiceObserve;
@@ -22,12 +26,15 @@ import com.netease.nimlib.sdk.msg.attachment.ImageAttachment;
 import com.netease.nimlib.sdk.msg.attachment.LocationAttachment;
 import com.netease.nimlib.sdk.msg.attachment.MsgAttachment;
 import com.netease.nimlib.sdk.msg.attachment.VideoAttachment;
+import com.netease.nimlib.sdk.msg.constant.DeleteTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.MsgDirectionEnum;
 import com.netease.nimlib.sdk.msg.constant.MsgStatusEnum;
 import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.MemberPushOption;
+import com.netease.nimlib.sdk.msg.model.QueryDirectionEnum;
+import com.netease.nimlib.sdk.msg.model.RecentContact;
 import com.ybwdaisy.Attachment.DefaultCustomAttachment;
 
 import java.io.File;
@@ -37,6 +44,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class SessionService {
 	private final static String TAG = "SessionService";
@@ -83,28 +91,154 @@ public class SessionService {
 
 	public void sendTextMessage(String content) {
 		IMMessage textMessage = MessageBuilder.createTextMessage(sessionId, sessionTypeEnum, content);
-		setPushConfig(textMessage);
-		getMsgService().sendMessage(textMessage, false);
-		onMessageStatusChange(textMessage);
+		doSendMessage(textMessage, false);
 	}
 
 	public void sendImageMessage(String file, String displayName) {
 		file = Uri.parse(file).getPath();
 		File f = new File(file);
 		IMMessage imageMessage = MessageBuilder.createImageMessage(sessionId, sessionTypeEnum, f, TextUtils.isEmpty(displayName) ? f.getName() : displayName);
-		setPushConfig(imageMessage);
-		getMsgService().sendMessage(imageMessage, false);
-		onMessageStatusChange(imageMessage);
+		doSendMessage(imageMessage, false);
 	}
 
 	public void sendCustomMessage(ReadableMap attachment) {
 		DefaultCustomAttachment defaultCustomAttachment = new DefaultCustomAttachment();
+		String recentContent = attachment.getString("recentContent");
+		defaultCustomAttachment.setRecentContent(recentContent);
 		defaultCustomAttachment.setCustomData(attachment);
 		String pushContent = attachment.getString("pushContent");
 		IMMessage customMessage  = MessageBuilder.createCustomMessage(sessionId, sessionTypeEnum, pushContent, defaultCustomAttachment);
-		setPushConfig(customMessage);
-		getMsgService().sendMessage(customMessage, false);
-		onMessageStatusChange(customMessage);
+		doSendMessage(customMessage, false);
+	}
+
+	public void updateCustomMessage(String messageId, ReadableMap attachment) {
+		queryMessageById(messageId, new MessageQueryListener() {
+			@Override
+			public int onResult(int code, IMMessage message) {
+				if (message != null) {
+					DefaultCustomAttachment defaultCustomAttachment = new DefaultCustomAttachment();
+					defaultCustomAttachment.setCustomData(attachment);
+					message.setAttachment(defaultCustomAttachment);
+					getMsgService().updateIMMessage(message);
+				}
+				return code;
+			}
+		});
+	}
+
+	public void resendMessage(String messageId) {
+		queryMessageById(messageId, new MessageQueryListener() {
+			@Override
+			public int onResult(int code, IMMessage message) {
+				if (message != null) {
+					message.setStatus(MsgStatusEnum.sending);
+					getMsgService().deleteChattingHistory(message);
+					doSendMessage(message, true);
+				}
+				return code;
+			}
+		});
+	}
+
+	public void deleteMessage(String messageId) {
+		queryMessageById(messageId, new MessageQueryListener() {
+			@Override
+			public int onResult(int code, IMMessage message) {
+				if (message != null) {
+					getMsgService().deleteChattingHistory(message);
+				}
+				return code;
+			}
+		});
+	}
+
+	public void clearMessage() {
+		getMsgService().clearChattingHistory(sessionId, sessionTypeEnum);
+	}
+
+	public int getTotalUnreadCount() {
+		return getMsgService().getTotalUnreadCount();
+	}
+
+	public void clearAllUnreadCount() {
+		getMsgService().clearAllUnreadCount();
+	}
+
+	public void doSendMessage(IMMessage message, boolean resend) {
+		setPushConfig(message);
+		getMsgService().sendMessage(message, resend);
+	}
+
+	public boolean isMyFriend() {
+		return NIMClient.getService(FriendService.class).isMyFriend(sessionId);
+	}
+
+	public void queryMessageById(String messageId, MessageQueryListener messageQueryListener) {
+		if (messageQueryListener == null) {
+			return;
+		}
+		if (TextUtils.isEmpty(messageId)) {
+			return;
+		}
+		List<String> uuids = new ArrayList<>();
+		uuids.add(messageId);
+		getMsgService().queryMessageListByUuid(uuids).setCallback(new RequestCallbackWrapper<List<IMMessage>>() {
+			@Override
+			public void onResult(int code, List<IMMessage> messageList, Throwable exception) {
+				if (messageList == null || messageList.isEmpty()) {
+					messageQueryListener.onResult(code, null);
+					return;
+				}
+				messageQueryListener.onResult(code, messageList.get(0));
+			}
+		});
+	}
+
+	public void queryRecentContacts(final Promise promise) {
+		getMsgService().queryRecentContacts().setCallback(new RequestCallbackWrapper<List<RecentContact>>() {
+			@Override
+			public void onResult(int code, List<RecentContact> recentContacts, Throwable exception) {
+				if (recentContacts != null && !recentContacts.isEmpty()) {
+					promise.resolve(ReactCache.createRecentList(recentContacts));
+				} else {
+					promise.reject(String.valueOf(code), "获取最近会话失败");
+				}
+			}
+		});
+	}
+
+	public void deleteRecentContact(String account) {
+		getMsgService().deleteRecentContact(account, sessionTypeEnum, DeleteTypeEnum.LOCAL_AND_REMOTE, false);
+	}
+
+	public void queryMessageListEx(String messageId, final int limit, final Promise promise) {
+		queryMessageById(messageId, new MessageQueryListener() {
+			@Override
+			public int onResult(int code, IMMessage message) {
+				if (message != null) {
+					getMsgService().queryMessageListEx(message, QueryDirectionEnum.QUERY_OLD, limit, true).setCallback(new RequestCallbackWrapper<List<IMMessage>>() {
+						@Override
+						public void onResult(int code, List<IMMessage> messageList, Throwable exception) {
+							if (code == ResponseCode.RES_SUCCESS && messageList != null && !messageList.isEmpty()) {
+								for (int i = messageList.size() - 1; i >= 0; i--) {
+									IMMessage message = messageList.get(i);
+									if (message == null) {
+										messageList.remove(i);
+									}
+								}
+								if (messageList.isEmpty()) {
+									promise.reject("-1", "获取历史消息失败");
+								} else {
+									Object a = ReactCache.createMessageList(messageList);
+									promise.resolve(a);
+								}
+							}
+						}
+					});
+				}
+				return code;
+			}
+		});
 	}
 
 	public MsgService getMsgService() {
@@ -189,6 +323,10 @@ public class SessionService {
 		return message.getSessionType() == sessionTypeEnum
 				&& message.getSessionId() != null
 				&& message.getSessionId().equals(sessionId);
+	}
+
+	public interface MessageQueryListener {
+		public int onResult(int code, IMMessage message);
 	}
 
 }

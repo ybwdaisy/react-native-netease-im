@@ -9,6 +9,7 @@ import com.ybwdaisy.ReactNativeJson;
 import org.json.JSONException;
 
 public class DefaultCustomAttachment extends CustomAttachment {
+	private String recentContent;
 	private String customData;
 
 	public DefaultCustomAttachment() {
@@ -22,6 +23,14 @@ public class DefaultCustomAttachment extends CustomAttachment {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void setRecentContent(String recentContent) {
+		this.recentContent = recentContent;
+	}
+
+	public String getRecentContent() {
+		return recentContent;
 	}
 
 	@Override

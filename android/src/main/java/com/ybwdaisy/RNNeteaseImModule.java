@@ -21,7 +21,6 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule {
         ReactCache.setReactContext(reactContext);
         loginService = LoginService.getInstance();
         sessionService = SessionService.getInstance();
-
     }
 
     @Override
@@ -63,8 +62,8 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void startSession(String sessionId, String type) {
-        sessionService.startSession(sessionId, type);
+    public void startSession(String sessionId, String sessionType) {
+        sessionService.startSession(sessionId, sessionType);
     }
 
     @ReactMethod
@@ -85,5 +84,55 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void sendCustomMessage(ReadableMap attachment) {
         sessionService.sendCustomMessage(attachment);
+    }
+
+    @ReactMethod
+    public void updateCustomMessage(String messageId, ReadableMap attachment) {
+        sessionService.updateCustomMessage(messageId, attachment);
+    }
+
+    @ReactMethod
+    public void resendMessage(String messageId) {
+        sessionService.resendMessage(messageId);
+    }
+
+    @ReactMethod
+    public void deleteMessage(String messageId) {
+        sessionService.deleteMessage(messageId);
+    }
+
+    @ReactMethod
+    public void clearMessage() {
+        sessionService.clearMessage();
+    }
+
+    @ReactMethod
+    public boolean isMyFriend() {
+        return sessionService.isMyFriend();
+    }
+
+    @ReactMethod
+    public int getTotalUnreadCount() {
+        return sessionService.getTotalUnreadCount();
+    }
+
+    @ReactMethod
+    public void clearAllUnreadCount() {
+        sessionService.clearAllUnreadCount();
+    }
+
+    @ReactMethod
+    public void queryRecentContacts(final Promise promise) {
+        sessionService.queryRecentContacts(promise);
+    }
+
+    @ReactMethod
+    public void deleteRecentContact(String account) {
+        sessionService.deleteRecentContact(account);
+    }
+
+    @ReactMethod
+    public void queryMessageListEx(String messageId, final int limit, final Promise promise) {
+        sessionService.queryMessageListEx(messageId, limit, promise);
     }
 }
