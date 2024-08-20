@@ -91,24 +91,17 @@ public class MessageConstant {
 		public final static String SIZE = "size";
 	}
 
-	public static class Link {
-		public final static String TITLE = "title";
-		public final static String DESCRIBE = "describe";
-		public final static String IMAGE = "image";
-		public final static String LINK_URL = "linkUrl";
-	}
-
 	public static class Event {
 		public final static String observeSDKInit = "observeSDKInit";//SDK初始化完成
 		public final static String observeOnlineStatus = "observeOnlineStatus";//'在线状态'
 		public final static String observeLoginSyncDataStatus = "observeLoginSyncDataStatus";//登录状态
-		public final static String observeRecentContact = "observeRecentContact";//'最近会话'
-		public final static String observeFriend = "observeFriend";//'联系人'
+		public final static String observeRecentContact = "observeRecentContact";//'最近会话''
 		public final static String observeReceiveMessage = "observeReceiveMessage";//'接收消息'
-		public final static String observeDeleteMessage = "observeDeleteMessage";//'撤销后删除消息'
-		public final static String observeReceiveSystemMsg = "observeReceiveSystemMsg";//'系统通知'
 		public final static String observeMsgStatus = "observeMsgStatus";//'发送消息状态变化'
+		public final static String observeUserInfoUpdate = "observeUserInfoUpdate"; //'用户信息更新'
 		public final static String observeUnreadCountChange = "observeUnreadCountChange";//'未读数变化'
-		public final static String observeUserInfoUpdate = "observeUserInfoUpdate";
+		public final static String observeReceiveSystemMsg = "observeReceiveSystemMsg";//'系统消息'
+		public final static String observeLaunchPushEvent = "observeLaunchPushEvent";
+		public final static String observeBackgroundPushEvent = "observeBackgroundPushEvent";
 	}
 }

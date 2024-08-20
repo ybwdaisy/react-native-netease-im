@@ -9,6 +9,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.friend.FriendService;
+import com.netease.nimlib.sdk.friend.model.AddFriendNotify;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.attachment.AudioAttachment;
 import com.netease.nimlib.sdk.msg.attachment.ImageAttachment;
@@ -19,8 +20,11 @@ import com.netease.nimlib.sdk.msg.constant.MsgDirectionEnum;
 import com.netease.nimlib.sdk.msg.constant.MsgStatusEnum;
 import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
+import com.netease.nimlib.sdk.msg.constant.SystemMessageStatus;
+import com.netease.nimlib.sdk.msg.constant.SystemMessageType;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
+import com.netease.nimlib.sdk.msg.model.SystemMessage;
 import com.ybwdaisy.Attachment.CustomAttachment;
 import com.ybwdaisy.Attachment.DefaultCustomAttachment;
 
@@ -389,4 +393,91 @@ public class ReactCache {
 		writableMap.putString(MessageConstant.Contact.UNREAD_COUNT, Integer.toString(unreadNumTotal));
 		return writableMap;
 	}
+
+	public static Object createSystemMsg(List<SystemMessage> sysItems) {
+		WritableArray writableArray = Arguments.createArray();
+
+		if (sysItems != null && sysItems.size() > 0) {
+			UserInfoCache userInfoCache = UserInfoCache.getInstance();
+			for (SystemMessage message : sysItems) {
+				WritableMap map = Arguments.createMap();
+				boolean verify = isVerifyMessageNeedDeal(message);
+				map.putString("messageId", Long.toString(message.getMessageId()));
+				map.putString("type", Integer.toString(message.getType().getValue()));
+				map.putString("targetId", message.getTargetId());
+				map.putString("fromAccount", message.getFromAccount());
+				String avatar = userInfoCache.getAvatar(message.getFromAccount());
+				map.putString("avatar", avatar);
+				map.putString("name", userInfoCache.getUserDisplayNameEx(message.getFromAccount()));//alias
+				map.putString("time", Long.toString(message.getTime() / 1000));
+				map.putString("isVerify", boolean2String(verify));
+				map.putString("status", Integer.toString(message.getStatus().getValue()));
+				map.putString("verifyText", getVerifyNotificationText(message));
+				map.putString("verifyResult", "");
+				if (verify) {
+					if (message.getStatus() != SystemMessageStatus.init) {
+						map.putString("verifyResult", getVerifyNotificationDealResult(message));
+					}
+				}
+				writableArray.pushMap(map);
+			}
+		}
+		return writableArray;
+	}
+
+	private static String getVerifyNotificationText(SystemMessage message) {
+		StringBuilder sb = new StringBuilder();
+		String fromAccount = UserInfoCache.getInstance().getUserDisplayNameYou(message.getFromAccount());
+		if (message.getType() == SystemMessageType.AddFriend) {
+			AddFriendNotify attachData = (AddFriendNotify) message.getAttachObject();
+			if (attachData != null) {
+				if (attachData.getEvent() == AddFriendNotify.Event.RECV_ADD_FRIEND_DIRECT) {
+					sb.append("已添加你为好友");
+				} else if (attachData.getEvent() == AddFriendNotify.Event.RECV_AGREE_ADD_FRIEND) {
+					sb.append("通过了你的好友请求");
+				} else if (attachData.getEvent() == AddFriendNotify.Event.RECV_REJECT_ADD_FRIEND) {
+					sb.append("拒绝了你的好友请求");
+				} else if (attachData.getEvent() == AddFriendNotify.Event.RECV_ADD_FRIEND_VERIFY_REQUEST) {
+					sb.append(TextUtils.isEmpty(message.getContent()) ? "请求添加好友" : message.getContent());
+				}
+			}
+		}
+
+		return sb.toString();
+	}
+
+	private static boolean isVerifyMessageNeedDeal(SystemMessage message) {
+		if (message.getType() == SystemMessageType.AddFriend) {
+			if (message.getAttachObject() != null) {
+				AddFriendNotify attachData = (AddFriendNotify) message.getAttachObject();
+				if (attachData.getEvent() == AddFriendNotify.Event.RECV_ADD_FRIEND_DIRECT ||
+						attachData.getEvent() == AddFriendNotify.Event.RECV_AGREE_ADD_FRIEND ||
+						attachData.getEvent() == AddFriendNotify.Event.RECV_REJECT_ADD_FRIEND) {
+					return false; // 对方直接加你为好友，对方通过你的好友请求，对方拒绝你的好友请求
+				} else if (attachData.getEvent() == AddFriendNotify.Event.RECV_ADD_FRIEND_VERIFY_REQUEST) {
+					return true; // 好友验证请求
+				}
+			}
+			return false;
+		} else if (message.getType() == SystemMessageType.TeamInvite || message.getType() == SystemMessageType.ApplyJoinTeam) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private static String getVerifyNotificationDealResult(SystemMessage message) {
+		if (message.getStatus() == SystemMessageStatus.passed) {
+			return "已同意";
+		} else if (message.getStatus() == SystemMessageStatus.declined) {
+			return "已拒绝";
+		} else if (message.getStatus() == SystemMessageStatus.ignored) {
+			return "已忽略";
+		} else if (message.getStatus() == SystemMessageStatus.expired) {
+			return "已过期";
+		} else {
+			return "未处理";
+		}
+	}
+
 }

@@ -2,7 +2,6 @@ package com.ybwdaisy;
 
 import android.content.Context;
 
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.netease.nimlib.sdk.AbortableFuture;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
@@ -12,6 +11,14 @@ import com.netease.nimlib.sdk.auth.AuthService;
 import com.netease.nimlib.sdk.auth.AuthServiceObserver;
 import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.auth.constant.LoginSyncStatus;
+import com.netease.nimlib.sdk.msg.MsgServiceObserve;
+import com.netease.nimlib.sdk.msg.SystemMessageObserver;
+import com.netease.nimlib.sdk.msg.model.IMMessage;
+import com.netease.nimlib.sdk.msg.model.RecentContact;
+import com.netease.nimlib.sdk.msg.model.SystemMessage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginService {
 	private final static String TAG = "LoginService";
@@ -47,6 +54,7 @@ public class LoginService {
 				if (callback != null) {
 					callback.onSuccess(loginInfo);
 				}
+				registerObserver(true);
 				loginInfoFuture = null;
 			}
 
@@ -55,6 +63,7 @@ public class LoginService {
 				if (callback != null) {
 					callback.onFailed(code);
 				}
+				registerObserver(false);
 				loginInfoFuture = null;
 			}
 
@@ -63,10 +72,10 @@ public class LoginService {
 				if (callback != null) {
 					callback.onException(exception);
 				}
+				registerObserver(false);
 				loginInfoFuture = null;
 			}
 		});
-		registerObserver(true);
 	}
 	public void logout() {
 		NIMClient.getService(AuthService.class).logout();//退出服务
@@ -80,15 +89,51 @@ public class LoginService {
 	}
 
 	private void registerObserver(Boolean register) {
-		NIMClient.getService(AuthServiceObserver.class).observeOnlineStatus(new Observer<StatusCode>() {
+		// 登录状态
+		AuthServiceObserver authServiceObserver = NIMClient.getService(AuthServiceObserver.class);
+		authServiceObserver.observeOnlineStatus(new Observer<StatusCode>() {
 			public void onEvent(StatusCode status) {
 				ReactCache.emit(MessageConstant.Event.observeOnlineStatus, status.getValue());
 			}
 		}, register);
 
-		NIMClient.getService(AuthServiceObserver.class).observeLoginSyncDataStatus(new Observer<LoginSyncStatus>() {
+		authServiceObserver.observeLoginSyncDataStatus(new Observer<LoginSyncStatus>() {
 			public void onEvent(LoginSyncStatus status) {
 				ReactCache.emit(MessageConstant.Event.observeLoginSyncDataStatus, status);
+			}
+		}, register);
+
+		// 会话消息
+		MsgServiceObserve msgServiceObserve = NIMClient.getService(MsgServiceObserve.class);
+		msgServiceObserve.observeReceiveMessage(new Observer<List<IMMessage>>() {
+			@Override
+			public void onEvent(List<IMMessage> imMessages) {
+				ReactCache.emit(MessageConstant.Event.observeReceiveMessage, ReactCache.createMessageList(imMessages));
+			}
+		}, register);
+		msgServiceObserve.observeRecentContact(new Observer<List<RecentContact>>() {
+			@Override
+			public void onEvent(List<RecentContact> recentContacts) {
+				if (recentContacts != null && !recentContacts.isEmpty()) {
+					ReactCache.emit(MessageConstant.Event.observeRecentContact, ReactCache.createRecentList(recentContacts));
+				}
+			}
+		}, register);
+
+		// 系统消息
+		SystemMessageObserver systemMessageObserver = NIMClient.getService(SystemMessageObserver.class);
+		systemMessageObserver.observeUnreadCountChange(new Observer<Integer>() {
+			@Override
+			public void onEvent(Integer unreadCount) {
+				ReactCache.emit(MessageConstant.Event.observeUnreadCountChange, unreadCount);
+			}
+		}, register);
+		systemMessageObserver.observeReceiveSystemMsg(new Observer<SystemMessage>() {
+			@Override
+			public void onEvent(SystemMessage systemMessage) {
+				List<SystemMessage> list = new ArrayList<>();
+				list.add(systemMessage);
+				ReactCache.emit(MessageConstant.Event.observeReceiveSystemMsg, ReactCache.createSystemMsg(list));
 			}
 		}, register);
 	}

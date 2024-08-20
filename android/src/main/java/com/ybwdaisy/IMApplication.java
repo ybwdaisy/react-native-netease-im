@@ -6,14 +6,10 @@ import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.SDKOptions;
 import com.netease.nimlib.sdk.auth.LoginInfo;
-import com.netease.nimlib.sdk.friend.FriendService;
-import com.netease.nimlib.sdk.friend.model.Friend;
 import com.netease.nimlib.sdk.lifecycle.SdkLifecycleObserver;
 import com.netease.nimlib.sdk.mixpush.MixPushConfig;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.ybwdaisy.Attachment.CustomAttachParser;
-
-import java.util.List;
 
 public class IMApplication {
 

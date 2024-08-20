@@ -11,8 +11,6 @@ import com.netease.nimlib.sdk.friend.model.Friend;
 import com.netease.nimlib.sdk.friend.model.FriendChangedNotify;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
-import com.netease.nimlib.sdk.uinfo.UserService;
-import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
