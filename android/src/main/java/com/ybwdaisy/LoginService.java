@@ -2,6 +2,7 @@ package com.ybwdaisy;
 
 import android.content.Context;
 
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.netease.nimlib.sdk.AbortableFuture;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
@@ -13,12 +14,10 @@ import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.auth.constant.LoginSyncStatus;
 
 public class LoginService {
-	final static String TAG = "LoginService";
+	private final static String TAG = "LoginService";
 	private String account;
 	private String token;
 	private AbortableFuture<LoginInfo> loginInfoFuture;
-
-	private LoginService() {}
 
 	static class InstanceHolder {
 		final static LoginService instance = new LoginService();
@@ -71,25 +70,25 @@ public class LoginService {
 	}
 	public void logout() {
 		NIMClient.getService(AuthService.class).logout();//退出服务
+		//清除缓存
+		UserInfoCache.getInstance().clear();
+		FriendCache.getInstance().clear();
+		//清除账号
+		account = null;
+		token = null;
+		registerObserver(false);
 	}
 
 	private void registerObserver(Boolean register) {
 		NIMClient.getService(AuthServiceObserver.class).observeOnlineStatus(new Observer<StatusCode>() {
 			public void onEvent(StatusCode status) {
-				String desc = status.getDesc();
-				if (status.wontAutoLogin()) {
-					//
-				}
+				ReactCache.emit(MessageConstant.Event.observeOnlineStatus, status.getValue());
 			}
 		}, register);
 
 		NIMClient.getService(AuthServiceObserver.class).observeLoginSyncDataStatus(new Observer<LoginSyncStatus>() {
 			public void onEvent(LoginSyncStatus status) {
-				if (status == LoginSyncStatus.BEGIN_SYNC) {
-					//
-				} else if (status == LoginSyncStatus.SYNC_COMPLETED) {
-					//
-				}
+				ReactCache.emit(MessageConstant.Event.observeLoginSyncDataStatus, status);
 			}
 		}, register);
 	}

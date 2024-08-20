@@ -4,6 +4,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.auth.LoginInfo;
@@ -11,12 +12,16 @@ import com.netease.nimlib.sdk.auth.LoginInfo;
 public class RNNeteaseImModule extends ReactContextBaseJavaModule {
 
     private final ReactApplicationContext reactContext;
-    private LoginService loginService = LoginService.getInstance();
-    private SessionService sessionService = SessionService.getInstance();
+    private LoginService loginService;
+    private SessionService sessionService;
 
     public RNNeteaseImModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
+        ReactCache.setReactContext(reactContext);
+        loginService = LoginService.getInstance();
+        sessionService = SessionService.getInstance();
+
     }
 
     @Override
@@ -75,5 +80,10 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void sendImageMessage(String file, String displayName) {
         sessionService.sendImageMessage(file, displayName);
+    }
+
+    @ReactMethod
+    public void sendCustomMessage(ReadableMap attachment) {
+        sessionService.sendCustomMessage(attachment);
     }
 }

@@ -73,8 +73,9 @@ repositories {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'  // From node_modules
-    implementation "com.netease.nimlib:basesdk:9.17.1"
-    implementation "com.netease.nimlib:push:9.17.1"
+    implementation 'com.netease.nimlib:basesdk:9.17.1'
+    implementation 'com.netease.nimlib:push:9.17.1'
+    implementation 'com.alibaba:fastjson:1.2.57'
 }
 
 def configureReactNativePom(def pom) {

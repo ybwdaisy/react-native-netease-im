@@ -79,8 +79,10 @@ public class MessageConstant {
 	}
 
 	public static class Event {
-		public final static String observeRecentContact = "observeRecentContact";//'最近会话'
+		public final static String observeSDKInit = "observeSDKInit";//SDK初始化完成
 		public final static String observeOnlineStatus = "observeOnlineStatus";//'在线状态'
+		public final static String observeLoginSyncDataStatus = "observeLoginSyncDataStatus";//登录状态
+		public final static String observeRecentContact = "observeRecentContact";//'最近会话'
 		public final static String observeFriend = "observeFriend";//'联系人'
 		public final static String observeTeam = "observeTeam";//'群组'
 		public final static String observeReceiveMessage = "observeReceiveMessage";//'接收消息'
@@ -95,5 +97,6 @@ public class MessageConstant {
 		public final static String observeAccountNotice = "observeAccountNotice";//'账户变动通知'
 		public final static String observeLaunchPushEvent = "observeLaunchPushEvent";//''
 		public final static String observeBackgroundPushEvent = "observeBackgroundPushEvent";//''
+		public final static String observeUserInfoUpdate = "observeUserInfoUpdate";
 	}
 }
