@@ -18,6 +18,7 @@ import com.netease.nimlib.sdk.msg.MsgServiceObserve;
 import com.netease.nimlib.sdk.msg.constant.DeleteTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.MsgStatusEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
+import com.netease.nimlib.sdk.msg.model.CustomMessageConfig;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.QueryDirectionEnum;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
@@ -148,6 +149,8 @@ public class SessionService {
 	}
 
 	public void doSendMessage(IMMessage message, boolean resend) {
+		CustomMessageConfig config = new CustomMessageConfig();
+		message.setConfig(config);
 		setPushConfig(message);
 		getMsgService().sendMessage(message, resend);
 	}
@@ -278,17 +281,41 @@ public class SessionService {
 	public void setPushConfig(IMMessage message) {
 		message.setPushContent(message.getContent());
 		Map<String, Object> payload = new HashMap<>();
-		Map<String, Object> body = new HashMap<>();
 
-		body.put("sessionType", String.valueOf(message.getSessionType().getValue()));
-		if (message.getSessionType() == SessionTypeEnum.P2P) {
-			String sessionId = LoginService.getInstance().getAccount();
-			String sessionName = UserInfoCache.getInstance().getUserName(sessionId);
-			body.put("sessionId", sessionId);
-			body.put("sessionName", sessionName);
-		}
+		String sessionId = LoginService.getInstance().getAccount();
+		String sessionName = UserInfoCache.getInstance().getUserName(sessionId);
+		payload.put("sessionId", sessionId);
+		payload.put("sessionName", sessionName);
 
-		payload.put("sessionBody", body);
+		payload.put("pushTitle", "");
+		//小米
+		payload.put("channel_id", "");
+
+		//华为
+		Map<String, Object> hwField = new HashMap<>();
+		Map<String, Object> hwFieldAndroidConfig = new HashMap<>();
+		hwFieldAndroidConfig.put("urgency", "NORMAL");
+		hwFieldAndroidConfig.put("category", "HEALTH");
+		hwField.put("androidConfig", hwFieldAndroidConfig);
+		payload.put("hwField", hwField);
+
+		//荣耀
+		Map<String, Object> honorField = new HashMap<>();
+		Map<String, Object> honorFieldNotification = new HashMap<>();
+		honorFieldNotification.put("importance", "NORMAL");
+		honorField.put("notification", honorFieldNotification);
+		payload.put("honorField", honorField);
+
+		//vivo
+		Map<String, Object> vivoField = new HashMap<>();
+		vivoField.put("category", "ORDER");
+		payload.put("vivoField", vivoField);
+
+		//OPPO
+		Map<String, Object> oppoField = new HashMap<>();
+		oppoField.put("channel_id", "");
+		payload.put("oppoField", oppoField);
+
 		message.setPushPayload(payload);
 	}
 
