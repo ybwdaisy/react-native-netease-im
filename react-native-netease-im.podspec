@@ -10,10 +10,7 @@ Pod::Spec.new do |s|
                   react-native-netease-im
                    DESC
   s.homepage     = "https://github.com/ybwdaisy/react-native-netease-im"
-  # brief license entry:
   s.license      = "MIT"
-  # optional - use expanded license entry instead:
-  # s.license    = { :type => "MIT", :file => "LICENSE" }
   s.authors      = { "ybwdaisy" => "ybwdaisy@gmail.com" }
   s.platforms    = { :ios => "9.0" }
   s.source       = { :git => "https://github.com/ybwdaisy/react-native-netease-im.git", :tag => "#{s.version}" }
@@ -22,7 +19,6 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React"
-  # ...
-  # s.dependency "..."
+  s.dependency "NIMSDK_LITE", "9.17.0"
 end
 
