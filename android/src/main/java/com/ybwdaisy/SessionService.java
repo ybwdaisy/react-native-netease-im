@@ -36,6 +36,7 @@ public class SessionService {
 	private String sessionId;
 	private boolean hasRegister;
 	private volatile MsgService msgService;
+	Map<String, Object> pushPayload;
 
 	static class InstanceHolder {
 		final static SessionService instance = new SessionService();
@@ -58,6 +59,14 @@ public class SessionService {
 			onIncomingMessage(messages);
 		}
 	};
+
+	public Map<String, Object> getPushPayload() {
+		return pushPayload;
+	}
+
+	public void setPushPayload(Map<String, Object> pushPayload) {
+		this.pushPayload = pushPayload;
+	}
 
 	public void startSession(String sessionId, String type) {
 		this.sessionId = sessionId;
@@ -156,7 +165,7 @@ public class SessionService {
 	}
 
 	public boolean isMyFriend() {
-		return NIMClient.getService(FriendService.class).isMyFriend(sessionId);
+		return FriendCache.getInstance().isMyFriend(sessionId);
 	}
 
 	public void queryMessageById(String messageId, MessageQueryListener messageQueryListener) {
@@ -280,43 +289,12 @@ public class SessionService {
 
 	public void setPushConfig(IMMessage message) {
 		message.setPushContent(message.getContent());
-		Map<String, Object> payload = new HashMap<>();
 
 		String sessionId = LoginService.getInstance().getAccount();
 		String sessionName = UserInfoCache.getInstance().getUserName(sessionId);
-		payload.put("sessionId", sessionId);
-		payload.put("sessionName", sessionName);
-
-		payload.put("pushTitle", "");
-		//小米
-		payload.put("channel_id", "");
-
-		//华为
-		Map<String, Object> hwField = new HashMap<>();
-		Map<String, Object> hwFieldAndroidConfig = new HashMap<>();
-		hwFieldAndroidConfig.put("urgency", "NORMAL");
-		hwFieldAndroidConfig.put("category", "HEALTH");
-		hwField.put("androidConfig", hwFieldAndroidConfig);
-		payload.put("hwField", hwField);
-
-		//荣耀
-		Map<String, Object> honorField = new HashMap<>();
-		Map<String, Object> honorFieldNotification = new HashMap<>();
-		honorFieldNotification.put("importance", "NORMAL");
-		honorField.put("notification", honorFieldNotification);
-		payload.put("honorField", honorField);
-
-		//vivo
-		Map<String, Object> vivoField = new HashMap<>();
-		vivoField.put("category", "ORDER");
-		payload.put("vivoField", vivoField);
-
-		//OPPO
-		Map<String, Object> oppoField = new HashMap<>();
-		oppoField.put("channel_id", "");
-		payload.put("oppoField", oppoField);
-
-		message.setPushPayload(payload);
+		pushPayload.put("sessionId", sessionId);
+		pushPayload.put("sessionName", sessionName);
+		message.setPushPayload(pushPayload);
 	}
 
 	public static SessionTypeEnum getSessionType(String type) {
