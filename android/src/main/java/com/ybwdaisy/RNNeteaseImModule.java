@@ -1,15 +1,24 @@
 package com.ybwdaisy;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.text.TextUtils;
+
+import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.auth.LoginInfo;
+import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 
-public class RNNeteaseImModule extends ReactContextBaseJavaModule {
+public class RNNeteaseImModule extends ReactContextBaseJavaModule implements ActivityEventListener {
 
     private final ReactApplicationContext reactContext;
     private LoginService loginService;
@@ -134,5 +143,35 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void queryMessageListEx(String messageId, final int limit, final Promise promise) {
         sessionService.queryMessageListEx(messageId, limit, promise);
+    }
+
+    @Override
+    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+        //
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        if (reactContext.getCurrentActivity() != null
+                && intent != null &&
+                !NIMClient.getStatus().wontAutoLogin()
+        ) {
+            reactContext.getCurrentActivity().setIntent(intent);
+            WritableMap map = Arguments.createMap();
+            if (intent.hasExtra("EXTRA_JUMP_P2P")) {
+                Intent data = intent.getParcelableExtra("data");
+                String account = data != null ? data.getStringExtra("account") : "";
+                if (!TextUtils.isEmpty(account)) {
+                    WritableMap session = Arguments.createMap();
+                    session.putString("sessionType", Integer.toString(SessionTypeEnum.P2P.getValue()));
+                    session.putString("sessionId", account);
+                    UserInfoCache userInfoCache = UserInfoCache.getInstance();
+                    String sessionName = userInfoCache.getUserName(account);
+                    session.putString("sessionName", sessionName);
+                    map.putMap("session", session);
+                    ReactCache.emit(MessageConstant.Event.observeBackgroundPushEvent, map);
+                }
+            }
+        }
     }
 }
