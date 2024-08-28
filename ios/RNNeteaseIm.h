@@ -1,6 +1,8 @@
+#import <React/RCTEventEmitter.h>
 #import <React/RCTBridgeModule.h>
 #import <NIMSDK/NIMSDK.h>
+#import "SessionViewController.h"
 
-@interface RNNeteaseIm : NSObject <RCTBridgeModule>
+@interface RNNeteaseIm : RCTEventEmitter <RCTBridgeModule>
 
 @end
