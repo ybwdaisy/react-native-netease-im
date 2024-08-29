@@ -12,7 +12,7 @@
 #import "CustomAttachment.h"
 
 typedef void(^Success)(id param);
-typedef void(^Errors)(id erro);
+typedef void(^Errors)(id error);
 
 @interface SessionViewController : UIViewController
 
@@ -24,16 +24,16 @@ typedef void(^Errors)(id erro);
 - (void)sendTextMessage:(NSString *)text;
 - (void)sendImageMessage:(NSString *)path withDisplayName:(NSString *)displayName;
 - (void)sendCustomMessage:(NSDictionary *)dict;
-- (void)updateCustomMessage:(NSString *)messageId withAttachment:(NSDictionary *)attachment;
-- (void)resendMessage:(NSString *)messageId;
-- (void)deleteMessage:(NSString *)messageId;
+- (void)updateCustomMessage:(nonnull NSString *)messageId withAttachment:(nonnull NSDictionary *)attachment;
+- (void)resendMessage:(nonnull NSString *)messageId;
+- (void)deleteMessage:(nonnull NSString *)messageId;
 - (void)clearMessage;
 - (Boolean)isMyFriend;
 - (NSInteger)getTotalUnreadCount;
 - (void)clearAllUnreadCount;
+- (void)queryMessageListEx:(nonnull NSString *)messageId withLimit:(NSInteger)limit success:(Success)success error:(Errors)error;
 - (void)queryRecentContacts;
-- (void)deleteRecentContact:(NSString *)account;
-- (void)queryMessageListEx:(NSString *)messageId withLimit:(NSInteger)limit success:(Success)success error:(Errors)error;
+- (void)deleteRecentContact:(nonnull NSString *)account;
 
 @end
 

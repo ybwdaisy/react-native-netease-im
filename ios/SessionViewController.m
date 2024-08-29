@@ -100,7 +100,7 @@
     [[[NIMSDK sharedSDK] chatManager] sendMessage:message toSession:_session error:nil];
 }
 
-- (void)updateCustomMessage:(NSString *)messageId withAttachment:(NSDictionary *)attachment {
+- (void)updateCustomMessage:(nonnull NSString *)messageId withAttachment:(nonnull NSDictionary *)attachment {
     NSArray *messageIds = [[NSArray alloc]initWithObjects:messageId, nil];
     NSArray *messages = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_session messageIds:messageIds];
     NIMMessage *message = messages[0];
@@ -115,6 +115,71 @@
     
     [[[NIMSDK sharedSDK] conversationManager] updateMessage:message forSession:_session completion:nil];
 }
+
+- (void)resendMessage:(nonnull NSString *)messageId {
+    NSArray *messageIds = [[NSArray alloc]initWithObjects:messageId, nil];
+    NSArray *messages = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_session messageIds:messageIds];
+    NIMMessage *message = messages[0];
+    
+    if (message.isReceivedMsg) {
+        [[[NIMSDK sharedSDK] chatManager] fetchMessageAttachment:message error:nil];
+    } else {
+        [[[NIMSDK sharedSDK] chatManager] resendMessage:message error:nil];
+    }
+}
+
+- (void)deleteMessage:(nonnull NSString *)messageId {
+    NSArray *messageIds = [[NSArray alloc]initWithObjects:messageId, nil];
+    NSArray *messages = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_session messageIds:messageIds];
+    NIMMessage *message = messages[0];
+    
+    [[[NIMSDK sharedSDK] conversationManager] deleteMessage:message];
+}
+
+- (void)clearMessage {
+    NIMDeleteMessagesOption *option = [[NIMDeleteMessagesOption alloc] init];
+    option.removeSession = NO;
+
+    [[[NIMSDK sharedSDK] conversationManager] deleteAllmessagesInSession:_session option:option];
+}
+
+- (BOOL)isMyFriend {
+    return [[[NIMSDK sharedSDK] userManager] isMyFriend:_session.sessionId];
+}
+
+- (NSInteger)getTotalUnreadCount {
+    return [[[NIMSDK sharedSDK] conversationManager] allUnreadCount];
+}
+
+- (void)clearAllUnreadCount {
+    [[[NIMSDK sharedSDK] conversationManager] markAllMessagesRead];
+}
+
+- (void)queryMessageListEx:(nonnull NSString *)messageId withLimit:(NSInteger)limit success:(Success)success error:(Errors)error {
+    [[[NIMSDK sharedSDK] conversationManager] markAllMessagesReadInSession:_session];
+    NIMMessage *anchorMessage = nil;
+    if (messageId) {
+        NSArray *messageIds = [[NSArray alloc]initWithObjects:messageId, nil];
+        NSArray *messages = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_session messageIds:messageIds];
+        anchorMessage = messages[0];
+    }
+    
+    NSArray *messageList = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_session message:anchorMessage limit:limit];
+    if (messageList.count > 0) {
+        success([MessageUtils createMessageList:messageList]);
+    } else {
+        error(@"暂无更多");
+    }
+}
+
+- (void)queryRecentContacts {
+    
+}
+
+- (void)deleteRecentContact:(nonnull NSString *)account {
+    
+}
+
 
 #pragma mark - Utils
 - (void)setApnsPayload:(NIMMessage *)message {
@@ -210,5 +275,19 @@
     }
     
 }
+
+#pragma mark NIMConversationManagerDelegate
+- (void)didAddRecentSession:(NIMRecentSession *)recentSession totalUnreadCount:(NSInteger)totalUnreadCount {
+    
+}
+
+- (void)didUpdateRecentSession:(NIMRecentSession *)recentSession totalUnreadCount:(NSInteger)totalUnreadCount {
+    
+}
+
+- (void)didRemoveRecentSession:(NIMRecentSession *)recentSession totalUnreadCount:(NSInteger)totalUnreadCount {
+    
+}
+
 
 @end
