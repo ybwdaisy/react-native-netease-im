@@ -189,6 +189,36 @@ public class SessionService {
 		});
 	}
 
+	public void queryMessageListEx(String messageId, final int limit, final Promise promise) {
+		queryMessageById(messageId, new MessageQueryListener() {
+			@Override
+			public int onResult(int code, IMMessage message) {
+				if (message != null) {
+					getMsgService().queryMessageListEx(message, QueryDirectionEnum.QUERY_OLD, limit, true).setCallback(new RequestCallbackWrapper<List<IMMessage>>() {
+						@Override
+						public void onResult(int code, List<IMMessage> messageList, Throwable exception) {
+						if (code == ResponseCode.RES_SUCCESS && messageList != null && !messageList.isEmpty()) {
+							for (int i = messageList.size() - 1; i >= 0; i--) {
+								IMMessage message = messageList.get(i);
+								if (message == null) {
+									messageList.remove(i);
+								}
+							}
+							if (messageList.isEmpty()) {
+								promise.reject("-1", "获取历史消息失败");
+							} else {
+								Object a = ReactCache.createMessageList(messageList);
+								promise.resolve(a);
+							}
+						}
+						}
+					});
+				}
+				return code;
+			}
+		});
+	}
+
 	public void queryRecentContacts(final Promise promise) {
 		getMsgService().queryRecentContacts().setCallback(new RequestCallbackWrapper<List<RecentContact>>() {
 			@Override
@@ -204,36 +234,6 @@ public class SessionService {
 
 	public void deleteRecentContact(String account) {
 		getMsgService().deleteRecentContact(account, sessionTypeEnum, DeleteTypeEnum.LOCAL_AND_REMOTE, false);
-	}
-
-	public void queryMessageListEx(String messageId, final int limit, final Promise promise) {
-		queryMessageById(messageId, new MessageQueryListener() {
-			@Override
-			public int onResult(int code, IMMessage message) {
-				if (message != null) {
-					getMsgService().queryMessageListEx(message, QueryDirectionEnum.QUERY_OLD, limit, true).setCallback(new RequestCallbackWrapper<List<IMMessage>>() {
-						@Override
-						public void onResult(int code, List<IMMessage> messageList, Throwable exception) {
-							if (code == ResponseCode.RES_SUCCESS && messageList != null && !messageList.isEmpty()) {
-								for (int i = messageList.size() - 1; i >= 0; i--) {
-									IMMessage message = messageList.get(i);
-									if (message == null) {
-										messageList.remove(i);
-									}
-								}
-								if (messageList.isEmpty()) {
-									promise.reject("-1", "获取历史消息失败");
-								} else {
-									Object a = ReactCache.createMessageList(messageList);
-									promise.resolve(a);
-								}
-							}
-						}
-					});
-				}
-				return code;
-			}
-		});
 	}
 
 	public MsgService getMsgService() {
