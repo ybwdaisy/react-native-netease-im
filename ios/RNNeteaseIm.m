@@ -93,6 +93,18 @@ RCT_EXPORT_METHOD(queryMessageListEx:(NSString *)messageId withLimit:(NSInteger)
     }];
 }
 
+RCT_EXPORT_METHOD(queryRecentContacts:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    [[SessionViewController sessionManager]queryRecentContacts:^(id param) {
+        resolve(param);
+    } error:^(id error) {
+        reject(@"-1", error, nil);
+    }];
+}
+
+RCT_EXPORT_METHOD(deleteRecentContact:(NSString *)sessionId) {
+    [[SessionViewController sessionManager]deleteRecentContact:sessionId];
+}
+
 
 - (void)setSendEvent {
     [ShareDataManager shared].eventBlock = ^(NSString *eventName, id data) {

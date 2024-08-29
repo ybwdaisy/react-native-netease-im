@@ -12,6 +12,11 @@
 @interface MessageUtils : NSObject
 
 + (NSMutableArray *)createMessageList:(NSMutableArray<NIMMessage *> *)messages;
+
 + (NSMutableDictionary *)createMessage:(NIMMessage *)message;
+
++ (NSMutableArray *)createRecentSessionList:(NSMutableArray<NIMRecentSession *> *)recents;
+
++ (NSMutableDictionary *)createRecentSession:(NIMRecentSession *)recent;
 
 @end

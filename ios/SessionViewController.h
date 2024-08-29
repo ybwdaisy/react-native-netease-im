@@ -32,8 +32,8 @@ typedef void(^Errors)(id error);
 - (NSInteger)getTotalUnreadCount;
 - (void)clearAllUnreadCount;
 - (void)queryMessageListEx:(nonnull NSString *)messageId withLimit:(NSInteger)limit success:(Success)success error:(Errors)error;
-- (void)queryRecentContacts;
-- (void)deleteRecentContact:(nonnull NSString *)account;
+- (void)queryRecentContacts:(Success)success error:(Errors)error;
+- (void)deleteRecentContact:(nonnull NSString *)sessionId;
 
 @end
 

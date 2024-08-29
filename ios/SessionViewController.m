@@ -172,12 +172,28 @@
     }
 }
 
-- (void)queryRecentContacts {
+- (void)queryRecentContacts:(Success)success error:(Errors)error {
+    NSMutableArray *allRecentSessions = [[[NIMSDK sharedSDK] conversationManager] allRecentSessions];
+    if (allRecentSessions.count > 0) {
+        NSMutableDictionary *sessionDict = [MessageUtils createRecentSessionList:allRecentSessions];
+        success(sessionDict);
+    } else {
+        error(@"获取最近会话失败");
+    }
     
 }
 
-- (void)deleteRecentContact:(nonnull NSString *)account {
-    
+- (void)deleteRecentContact:(nonnull NSString *)sessionId {
+    NSArray *allRecentSessions = [[[NIMSDK sharedSDK] conversationManager] allRecentSessions];
+    for (NIMRecentSession *recent in allRecentSessions) {
+        if ([recent.session.sessionId isEqualToString:sessionId]) {
+            [[[NIMSDK sharedSDK] conversationManager] deleteRecentSession:recent];
+            // TODO: 是否需要清除所有消息
+//            NIMDeleteMessagesOption *option = [[NIMDeleteMessagesOption alloc]init];
+//            option.removeSession = YES;
+//            [[[NIMSDK sharedSDK] conversationManager] deleteAllmessagesInSession:recent.session option:option];
+        }
+    }
 }
 
 
