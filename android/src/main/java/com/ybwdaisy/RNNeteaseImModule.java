@@ -116,25 +116,18 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule implements Act
     }
 
     @ReactMethod
-    public void isMyFriend(final Promise promise) {
-        boolean isMyFriend = sessionService.isMyFriend();
-        promise.resolve(isMyFriend);
+    public boolean isMyFriend() {
+        return sessionService.isMyFriend();
     }
 
     @ReactMethod
-    public void getTotalUnreadCount(final Promise promise) {
-        int unreadCount = sessionService.getTotalUnreadCount();
-        promise.resolve(unreadCount);
+    public int getTotalUnreadCount() {
+        return sessionService.getTotalUnreadCount();
     }
 
     @ReactMethod
     public void clearAllUnreadCount() {
         sessionService.clearAllUnreadCount();
-    }
-
-    @ReactMethod
-    public void queryMessageListEx(String messageId, final int limit, final Promise promise) {
-        sessionService.queryMessageListEx(messageId, limit, promise);
     }
 
     @ReactMethod
@@ -145,6 +138,11 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule implements Act
     @ReactMethod
     public void deleteRecentContact(String account) {
         sessionService.deleteRecentContact(account);
+    }
+
+    @ReactMethod
+    public void queryMessageListEx(String messageId, final int limit, final Promise promise) {
+        sessionService.queryMessageListEx(messageId, limit, promise);
     }
 
     @Override
