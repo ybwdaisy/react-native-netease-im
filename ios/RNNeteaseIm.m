@@ -8,8 +8,66 @@ RCT_EXPORT_MODULE()
     self = [super init];
     if (self) {
         [self setSendEvent];
+        
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(clickNotification:) name:@"NETEASE_APNS_NOTIFICATION_ARRIVED_EVENT" object:nil];
+        
     }
     return self;
+}
+
++ (void)updateApnsToken:(NSData *)token customContentKey:(nullable NSString *)key {
+    [[NIMSDK sharedSDK] updateApnsToken:token customContentKey:key];
+}
+
++ (void)registerAppKey:(nullable NSString *)appKey andApnsCername:(nullable NSString*)apnsCername {
+    
+    NIMSDKOption *option = [[NIMSDKOption alloc] init];
+    option.appKey = appKey;
+    option.apnsCername = apnsCername;
+    [[NIMSDK sharedSDK] registerWithOption:option];
+    // 注册自定义消息的解析器
+    [NIMCustomObject registerCustomDecoder:[[CustomAttachmentDecoder alloc] init]];
+}
+
+- (void)clickNotification:(NSNotification *)noti{
+    NSDictionary *dict = noti.object;
+    NSMutableDictionary *param = [NSMutableDictionary dictionaryWithDictionary:[dict objectForKey:@"dict"]];
+    NSString *strDict = [param objectForKey:@"session"];
+    if ([strDict length]) {
+        NSDictionary *dataDict = [self dictChangeFromJson:strDict];
+        NSMutableDictionary *mutaDict = [NSMutableDictionary dictionaryWithDictionary:dataDict];
+        NSString *strType = [mutaDict objectForKey:@"sessionType"];
+        NSString *strSessionId = [mutaDict objectForKey:@"sessionId"];
+        NSString *strSessionName = @"";
+        if ([strType isEqualToString:@"0"]) {
+            NIMUser *user = [[[NIMSDK sharedSDK] userManager] userInfo:strSessionId];
+            if ([user.alias length]) {
+                strSessionName = user.alias;
+            }else{
+                NIMUserInfo *userInfo = user.userInfo;
+                strSessionName = userInfo.nickName;
+            }
+        } else {
+            NIMTeam *team = [[[NIMSDK sharedSDK] teamManager]teamById:strSessionId];
+            strSessionName = team.teamName;
+        }
+        if (!strSessionName) {
+            strSessionName = @"";
+        }
+        [mutaDict setObject:strSessionName forKey:@"sessionName"];
+        [param setObject:mutaDict forKey:@"session"];
+        [self sendEventWithName:observeBackgroundPushEvent body:param];
+    }
+}
+
+- (NSDictionary *)dictChangeFromJson:(NSString *)strJson{
+    NSData* data = [strJson dataUsingEncoding:NSUTF8StringEncoding];
+    __autoreleasing NSError* error = nil;
+    id result = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    if (error != nil) {
+        return nil;
+    };
+    return result;
 }
 
 RCT_EXPORT_METHOD(login:(nonnull NSString *)account token:(nonnull NSString *)token resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
