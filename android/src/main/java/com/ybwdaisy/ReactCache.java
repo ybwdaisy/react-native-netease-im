@@ -292,7 +292,6 @@ public class ReactCache {
 
 	// ******************************* 处理会话 *********************************
 	public static Object createRecentList(List<RecentContact> recents) {
-		WritableMap writableMap = Arguments.createMap();
 		WritableArray array = Arguments.createArray();
 		int unreadNumTotal = 0;
 		if (recents != null && recents.size() > 0) {
@@ -389,6 +388,7 @@ public class ReactCache {
 				array.pushMap(map);
 			}
 		}
+		WritableMap writableMap = Arguments.createMap();
 		writableMap.putArray(MessageConstant.Contact.RECENTS, array);
 		writableMap.putString(MessageConstant.Contact.UNREAD_COUNT, Integer.toString(unreadNumTotal));
 		return writableMap;
@@ -413,7 +413,6 @@ public class ReactCache {
 				map.putString("isVerify", boolean2String(verify));
 				map.putString("status", Integer.toString(message.getStatus().getValue()));
 				map.putString("verifyText", getVerifyNotificationText(message));
-				map.putString("verifyResult", "");
 				if (verify) {
 					if (message.getStatus() != SystemMessageStatus.init) {
 						map.putString("verifyResult", getVerifyNotificationDealResult(message));

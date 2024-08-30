@@ -18,5 +18,7 @@ typedef void(^onSuccess)(NSString *eventName, id data);
 @property(nonatomic, strong) NSString *loginSyncDataStatus;
 @property(nonatomic, strong) NSMutableArray *messageList;
 @property(nonatomic, strong) NSMutableArray *receiveMessages;
+@property(nonatomic, strong) NSMutableDictionary *recentContact;
+@property(nonatomic, assign) NSInteger sysUnreadCount;
 
 @end

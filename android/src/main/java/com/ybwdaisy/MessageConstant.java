@@ -99,7 +99,7 @@ public class MessageConstant {
 		public final static String observeReceiveMessage = "observeReceiveMessage";//'接收消息'
 		public final static String observeMsgStatus = "observeMsgStatus";//'发送消息状态变化'
 		public final static String observeUserInfoUpdate = "observeUserInfoUpdate"; //'用户信息更新'
-		public final static String observeUnreadCountChange = "observeUnreadCountChange";//'未读数变化'
+		public final static String observeSysUnreadCount = "observeSysUnreadCount";//'系统消息未读数'
 		public final static String observeReceiveSystemMsg = "observeReceiveSystemMsg";//'系统消息'
 		public final static String observeLaunchPushEvent = "observeLaunchPushEvent";//'前台推送'
 		public final static String observeBackgroundPushEvent = "observeBackgroundPushEvent";//'后台推送'

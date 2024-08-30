@@ -133,39 +133,61 @@
     return newMessage;
 }
 
-+ (NSMutableDictionary *)createRecentSessionList:(NSMutableArray<NIMRecentSession *> *)recents {
++ (NSMutableDictionary *)createRecentContact:(NSMutableArray<NIMRecentSession *> *)recents {
     NSMutableArray *newRecents = [NSMutableArray array];
+    NSInteger unreadCount = 0;
     for (NIMRecentSession *recent in recents) {
-        NIMRecentSession *newRecent = [MessageUtils createRecentSession:recent];
+        unreadCount = unreadCount + recent.unreadCount;
+        
+        NSMutableDictionary *newRecent = [NSMutableDictionary dictionary];
+        
+        [newRecent setObject:[NSString stringWithFormat:@"%@", recent.session.sessionId] forKey:@"contactId"];
+        [newRecent setObject:[NSString stringWithFormat:@"%zd", recent.session.sessionType] forKey:@"sessionType"];
+        [newRecent setObject:[NSString stringWithFormat:@"%zd", recent.unreadCount] forKey:@"unreadCount"];
+        [newRecent setObject:[NSString stringWithFormat:@"%@", [MessageUtils getUserName:recent.session.sessionId]] forKey:@"name"];
+        [newRecent setObject:[NSString stringWithFormat:@"%@", recent.lastMessage.from] forKey:@"account"];
+        [newRecent setObject:[NSString stringWithFormat:@"%zd", recent.lastMessage.messageType] forKey:@"msgType"];
+        [newRecent setObject:[NSString stringWithFormat:@"%zd", recent.lastMessage.deliveryState] forKey:@"msgStatus"];
+        [newRecent setObject:[NSString stringWithFormat:@"%@", recent.lastMessage.messageId] forKey:@"messageId"];
+        [newRecent setObject:[NSString stringWithFormat:@"%@", [MessageUtils getContent:recent.lastMessage]] forKey:@"content"];
+        [newRecent setObject:[NSString stringWithFormat:@"%@", [MessageUtils getShowTime:recent.lastMessage.timestamp showDetail:NO]] forKey:@"time"];
+        [newRecent setObject:[NSString stringWithFormat:@"%@", [MessageUtils getUserAvatar:recent.session.sessionId]] forKey:@"imagePath"];
+        [newRecent setObject:[MessageUtils getExt:recent.session.sessionId] forKey:@"ext"];
+        
         [newRecents addObject:newRecent];
     }
-    
-    NSMutableDictionary *recentDict = [[NSMutableDictionary alloc] init];
-    [recentDict setValue:newRecents forKey:@"recents"];
-    [recentDict setValue:0 forKey:@"unreadCount"];
-    
-    return recentDict;
+    NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
+    [result setValue:newRecents forKey:@"recents"];
+    [result setValue:@(unreadCount) forKey:@"unreadCount"];
+    return result;
 }
 
-+ (NSMutableDictionary *)createRecentSession:(NIMRecentSession *)recent {
-    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
++ (NSMutableArray *)createSystemMsg:(NSMutableArray<NIMSystemNotification *> *)notifications {
+    NSMutableArray *newNotifications = [NSMutableArray array];
+    for (NIMSystemNotification *notification in notifications) {
+        NSMutableDictionary *newNotification = [NSMutableDictionary dictionary];
+        
+        NSMutableDictionary *verifyInfo = [MessageUtils getVerifyInfo:notification];
+        NSString *isVerify = [verifyInfo objectForKey:@"isVerify"];
+        NSString *verifyText = [verifyInfo objectForKey:@"verifyText"];
+        
+        [newNotification setObject:[NSString stringWithFormat:@"%@", isVerify] forKey:@"isVerify"];
+        [newNotification setObject:[NSString stringWithFormat:@"%@", verifyText] forKey:@"verifyText"];
+        [newNotification setObject:[NSString stringWithFormat:@"%lld", notification.notificationId] forKey:@"messageId"];
+        [newNotification setObject:[NSString stringWithFormat:@"%ld", notification.type] forKey:@"type"];
+        [newNotification setObject:[NSString stringWithFormat:@"%@", notification.targetID] forKey:@"targetId"];
+        [newNotification setObject:[NSString stringWithFormat:@"%@", notification.sourceID] forKey:@"fromAccount"];
+        [newNotification setObject:[NSString stringWithFormat:@"%@", notification.postscript] forKey:@"content"];
+        [newNotification setObject:[NSString stringWithFormat:@"%@", [MessageUtils getUserName:notification.sourceID]] forKey:@"name"];
+        [newNotification setObject:[NSString stringWithFormat:@"%@", [MessageUtils getUserAvatar:notification.sourceID]] forKey:@"avatar"];
+        [newNotification setObject:[NSString stringWithFormat:@"%ld", notification.handleStatus] forKey:@"status"];
+        [newNotification setObject:[NSString stringWithFormat:@"%f", notification.timestamp] forKey:@"time"];
+        
+        [newNotifications addObject:newNotification];
+    }
     
-    [dict setObject:[NSString stringWithFormat:@"%@", recent.session.sessionId] forKey:@"contactId"];
-    [dict setObject:[NSString stringWithFormat:@"%zd", recent.session.sessionType] forKey:@"sessionType"];
-    [dict setObject:[NSString stringWithFormat:@"%zd", recent.unreadCount] forKey:@"unreadCount"];
-    [dict setObject:[NSString stringWithFormat:@"%@", [MessageUtils getUserName:recent.session.sessionId]] forKey:@"name"];
-    [dict setObject:[NSString stringWithFormat:@"%@", recent.lastMessage.from] forKey:@"account"];
-    [dict setObject:[NSString stringWithFormat:@"%zd", recent.lastMessage.messageType] forKey:@"msgType"];
-    [dict setObject:[NSString stringWithFormat:@"%zd", recent.lastMessage.deliveryState] forKey:@"msgStatus"];
-    [dict setObject:[NSString stringWithFormat:@"%@", recent.lastMessage.messageId] forKey:@"messageId"];
-    [dict setObject:[NSString stringWithFormat:@"%@", [MessageUtils getContent:recent.lastMessage]] forKey:@"content"];
-    [dict setObject:[NSString stringWithFormat:@"%@", [MessageUtils getShowTime:recent.lastMessage.timestamp showDetail:NO]] forKey:@"time"];
-    [dict setObject:[NSString stringWithFormat:@"%@", [MessageUtils getUserAvatar:recent.session.sessionId]] forKey:@"imagePath"];
-    [dict setObject:[MessageUtils getExt:recent.session.sessionId] forKey:@"ext"];
-    
-    return dict;
+    return newNotifications;
 }
-
 
 #pragma mark Message Utils
 + (NSString *)convertNIMMessageDeliveryStateToString:(NIMMessageDeliveryState)state {
@@ -335,6 +357,67 @@
                        @(6):@"星期五",
                        @(7):@"星期六",};
     return [daysOfWeekDict objectForKey:@(dayOfWeek)];
+}
+
+#pragma mark System Notification Utils
++ (NSMutableDictionary *)getVerifyInfo:(NIMSystemNotification *)notification {
+    NSString *isVerify = @"0";
+    NSString *verifyText = @"未知请求";
+    NIMTeam *team = [[[NIMSDK sharedSDK] teamManager] teamById:notification.targetID];
+    
+    switch (notification.type) {
+        case NIMSystemNotificationTypeTeamApply: {
+            isVerify = @"1";
+            verifyText = [NSString stringWithFormat:@"申请加入群 %@", team.teamName];
+            break;
+        }
+        case NIMSystemNotificationTypeTeamApplyReject: {
+            verifyText = [NSString stringWithFormat:@"群 %@ 拒绝你加入", team.teamName];
+            break;
+        }
+        case NIMSystemNotificationTypeTeamInvite: {
+            isVerify = @"1";
+            verifyText = [NSString stringWithFormat:@"群 %@ 邀请你加入", team.teamName];
+            break;
+        }
+        case NIMSystemNotificationTypeTeamIviteReject: {
+            verifyText = [NSString stringWithFormat:@"拒绝了群 %@ 邀请", team.teamName];
+            break;
+        }
+        case NIMSystemNotificationTypeFriendAdd: {
+            id object = notification.attachment;
+            if ([object isKindOfClass:[NIMUserAddAttachment class]]) {
+                NIMUserOperation operation = [(NIMUserAddAttachment *)object operationType];
+                switch (operation) {
+                    case NIMUserOperationAdd:
+                        verifyText = @"已添加你为好友";
+                        break;
+                    case NIMUserOperationRequest:
+                        isVerify = @"1";
+                        verifyText = [notification.postscript length]? notification.postscript : @"请求添加你为好友";
+                        break;
+                    case NIMUserOperationVerify:
+                        verifyText = @"通过了你的好友请求";
+                        break;
+                    case NIMUserOperationReject:
+                        verifyText = @"拒绝了你的好友请求";
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+            break;
+        default:
+            break;
+    }
+    
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    [result setValue:isVerify forKey:@"isVerify"];
+    [result setValue:verifyText forKey:@"verifyText"];
+    
+    return result;
+    
 }
 
 

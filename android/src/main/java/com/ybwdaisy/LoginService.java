@@ -125,7 +125,7 @@ public class LoginService {
 		systemMessageObserver.observeUnreadCountChange(new Observer<Integer>() {
 			@Override
 			public void onEvent(Integer unreadCount) {
-				ReactCache.emit(MessageConstant.Event.observeUnreadCountChange, unreadCount);
+				ReactCache.emit(MessageConstant.Event.observeSysUnreadCount, unreadCount);
 			}
 		}, register);
 		systemMessageObserver.observeReceiveSystemMsg(new Observer<SystemMessage>() {

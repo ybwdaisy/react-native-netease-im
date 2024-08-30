@@ -15,8 +15,8 @@
 
 + (NSMutableDictionary *)createMessage:(NIMMessage *)message;
 
-+ (NSMutableArray *)createRecentSessionList:(NSMutableArray<NIMRecentSession *> *)recents;
++ (NSMutableDictionary *)createRecentContact:(NSMutableArray<NIMRecentSession *> *)recents;
 
-+ (NSMutableDictionary *)createRecentSession:(NIMRecentSession *)recent;
++ (NSMutableArray *)createSystemMsg:(NSMutableArray<NIMSystemNotification *> *)notifications;
 
 @end

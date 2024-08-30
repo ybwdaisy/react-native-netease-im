@@ -16,7 +16,7 @@ extern NSString * const observeRecentContact;        // 最近会话
 extern NSString * const observeReceiveMessage;       // 接收消息
 extern NSString * const observeMsgStatus;            // 发送消息状态变化
 extern NSString * const observeUserInfoUpdate;       // 用户信息更新
-extern NSString * const observeUnreadCountChange;    // 未读数变化
+extern NSString * const observeSysUnreadCount;       // 系统消息未读数
 extern NSString * const observeReceiveSystemMsg;     // 系统消息
 extern NSString * const observeLaunchPushEvent;      // 前台推送
 extern NSString * const observeBackgroundPushEvent;  // 后台推送

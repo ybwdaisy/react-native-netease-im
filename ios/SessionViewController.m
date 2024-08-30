@@ -175,7 +175,7 @@
 - (void)queryRecentContacts:(Success)success error:(Errors)error {
     NSMutableArray *allRecentSessions = [[[NIMSDK sharedSDK] conversationManager] allRecentSessions];
     if (allRecentSessions.count > 0) {
-        NSMutableDictionary *sessionDict = [MessageUtils createRecentSessionList:allRecentSessions];
+        NSMutableDictionary *sessionDict = [MessageUtils createRecentContact:allRecentSessions];
         success(sessionDict);
     } else {
         error(@"获取最近会话失败");
@@ -214,31 +214,6 @@
     
     message.apnsPayload = payload;
 }
-
-#pragma mark - NIMChatManagerDelegate
-- (void)willSendMessage:(NIMMessage *)message {
-    NSMutableArray *messages = [[NSMutableArray alloc] initWithObjects:message, nil];
-    NSMutableArray *newMessages = [MessageUtils createMessageList:messages];
-    [ShareDataManager shared].messageList = newMessages;
-}
-
-- (void)sendMessage:(NIMMessage *)message progress:(float)progress {
-    NSMutableArray *messages = [[NSMutableArray alloc] initWithObjects:message, nil];
-    NSMutableArray *newMessages = [MessageUtils createMessageList:messages];
-    [ShareDataManager shared].messageList = newMessages;
-}
-
-- (void)sendMessage:(NIMMessage *)message didCompleteWithError:(nullable NSError *)error {
-    NSMutableArray *messages = [[NSMutableArray alloc] initWithObjects:message, nil];
-    NSMutableArray *newMessages = [MessageUtils createMessageList:messages];
-    [ShareDataManager shared].messageList = newMessages;
-}
-
-- (void)onRecvMessages:(NSArray<NIMMessage *> *)messages {
-    NSMutableArray *receiveMessages = [MessageUtils createMessageList:messages];
-    [ShareDataManager shared].receiveMessages = receiveMessages;
-}
-
 
 #pragma mark - NIMLoginManagerDelegate
 - (void)onLogin:(NIMLoginStep)step {
@@ -292,18 +267,58 @@
     
 }
 
+
+#pragma mark - NIMChatManagerDelegate
+- (void)willSendMessage:(NIMMessage *)message {
+    NSMutableArray *messages = [[NSMutableArray alloc] initWithObjects:message, nil];
+    NSMutableArray *newMessages = [MessageUtils createMessageList:messages];
+    [ShareDataManager shared].messageList = newMessages;
+}
+
+- (void)sendMessage:(NIMMessage *)message progress:(float)progress {
+    NSMutableArray *messages = [[NSMutableArray alloc] initWithObjects:message, nil];
+    NSMutableArray *newMessages = [MessageUtils createMessageList:messages];
+    [ShareDataManager shared].messageList = newMessages;
+}
+
+- (void)sendMessage:(NIMMessage *)message didCompleteWithError:(nullable NSError *)error {
+    NSMutableArray *messages = [[NSMutableArray alloc] initWithObjects:message, nil];
+    NSMutableArray *newMessages = [MessageUtils createMessageList:messages];
+    [ShareDataManager shared].messageList = newMessages;
+}
+
+- (void)onRecvMessages:(NSArray<NIMMessage *> *)messages {
+    NSMutableArray *receiveMessages = [MessageUtils createMessageList:messages];
+    [ShareDataManager shared].receiveMessages = receiveMessages;
+}
+
 #pragma mark NIMConversationManagerDelegate
 - (void)didAddRecentSession:(NIMRecentSession *)recentSession totalUnreadCount:(NSInteger)totalUnreadCount {
-    
+    [self updateRecent:recentSession totalUnreadCount:totalUnreadCount];
 }
 
 - (void)didUpdateRecentSession:(NIMRecentSession *)recentSession totalUnreadCount:(NSInteger)totalUnreadCount {
-    
+    [self updateRecent:recentSession totalUnreadCount:totalUnreadCount];
 }
 
 - (void)didRemoveRecentSession:(NIMRecentSession *)recentSession totalUnreadCount:(NSInteger)totalUnreadCount {
+    [self updateRecent:recentSession totalUnreadCount:totalUnreadCount];
+}
+
+- (void)updateRecent:(NIMRecentSession *)recentSession totalUnreadCount:(NSInteger)totalUnreadCount {
+    NSMutableArray *recents = [[NSMutableArray alloc] initWithObjects:recents, nil];
+    NSMutableDictionary *result = [MessageUtils createRecentContact:recents];
+    [ShareDataManager shared].recentContact = result;
+}
+
+
+#pragma mark NIMSystemNotificationManagerDelegate
+- (void)onReceiveSystemNotification:(NIMSystemNotification *)notification {
     
 }
 
+- (void)onSystemNotificationCountChanged:(NSInteger)unreadCount {
+    [ShareDataManager shared].sysUnreadCount = unreadCount;
+}
 
 @end

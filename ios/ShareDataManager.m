@@ -51,4 +51,18 @@
     }
 }
 
+- (void)setRecentContact:(NSMutableDictionary *)recentContact {
+    _recentContact = recentContact;
+    if (self.eventBlock) {
+        self.eventBlock(observeRecentContact, recentContact);
+    }
+}
+
+- (void)setSysUnreadCount:(NSInteger)sysUnreadCount {
+    _sysUnreadCount = sysUnreadCount;
+    if (self.eventBlock) {
+        self.eventBlock(observeSysUnreadCount, @(sysUnreadCount));
+    }
+}
+
 @end
