@@ -98,9 +98,11 @@ public class SessionService {
 	}
 
 	public void sendImageMessage(String file, String displayName) {
+		file = file.replace("file://", "");
 		file = Uri.parse(file).getPath();
-		File f = new File(file);
-		IMMessage imageMessage = MessageBuilder.createImageMessage(sessionId, sessionTypeEnum, f, TextUtils.isEmpty(displayName) ? f.getName() : displayName);
+		File newFile = new File(file);
+		String fileName = TextUtils.isEmpty(displayName) ? newFile.getName() : displayName;
+		IMMessage imageMessage = MessageBuilder.createImageMessage(sessionId, sessionTypeEnum, newFile, fileName);
 		doSendMessage(imageMessage, false);
 	}
 

@@ -1,5 +1,7 @@
-import { NativeModules } from 'react-native';
+import NimSession from './src/Session';
+import NimFriend from './src/Friend';
 
-const { RNNeteaseIm } = NativeModules;
-
-export default RNNeteaseIm;
+export {
+  NimSession,
+  NimFriend,
+}
