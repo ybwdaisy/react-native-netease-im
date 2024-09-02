@@ -65,4 +65,11 @@
     }
 }
 
+- (void)setAttachmentProgress:(NSMutableDictionary *)attachmentProgress {
+    _attachmentProgress = attachmentProgress;
+    if (self.eventBlock) {
+        self.eventBlock(observeAttachmentProgress, attachmentProgress);
+    }
+}
+
 @end

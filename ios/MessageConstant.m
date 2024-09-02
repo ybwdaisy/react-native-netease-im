@@ -9,16 +9,14 @@
 
 @implementation MessageConstant
 
-NSString * const observeSDKInit = @"observeSDKInit";
 NSString * const observeOnlineStatus = @"observeOnlineStatus";
 NSString * const observeLoginSyncDataStatus = @"observeLoginSyncDataStatus";
 NSString * const observeMsgStatus = @"observeMsgStatus";
 NSString * const observeRecentContact = @"observeRecentContact";
 NSString * const observeReceiveMessage = @"observeReceiveMessage";
-NSString * const observeUserInfoUpdate = @"observeUserInfoUpdate";
+NSString * const observeAttachmentProgress = @"observeAttachmentProgress";
 NSString * const observeSysUnreadCount = @"observeSysUnreadCount";
 NSString * const observeReceiveSystemMsg = @"observeReceiveSystemMsg";
-NSString * const observeLaunchPushEvent = @"observeLaunchPushEvent";
 NSString * const observeBackgroundPushEvent = @"observeBackgroundPushEvent";
 
 @end

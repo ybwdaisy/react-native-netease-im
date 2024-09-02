@@ -34,7 +34,7 @@ RCT_EXPORT_MODULE()
     NSMutableDictionary *param = [NSMutableDictionary dictionaryWithDictionary:[dict objectForKey:@"dict"]];
     NSString *strDict = [param objectForKey:@"session"];
     if ([strDict length]) {
-        NSDictionary *dataDict = [self dictChangeFromJson:strDict];
+        NSDictionary *dataDict = [self dictFromJson:strDict];
         NSMutableDictionary *mutaDict = [NSMutableDictionary dictionaryWithDictionary:dataDict];
         NSString *strType = [mutaDict objectForKey:@"sessionType"];
         NSString *strSessionId = [mutaDict objectForKey:@"sessionId"];
@@ -43,7 +43,7 @@ RCT_EXPORT_MODULE()
             NIMUser *user = [[[NIMSDK sharedSDK] userManager] userInfo:strSessionId];
             if ([user.alias length]) {
                 strSessionName = user.alias;
-            }else{
+            } else {
                 NIMUserInfo *userInfo = user.userInfo;
                 strSessionName = userInfo.nickName;
             }
@@ -60,8 +60,8 @@ RCT_EXPORT_MODULE()
     }
 }
 
-- (NSDictionary *)dictChangeFromJson:(NSString *)strJson{
-    NSData* data = [strJson dataUsingEncoding:NSUTF8StringEncoding];
+- (NSDictionary *)dictFromJson:(NSString *)json{
+    NSData* data = [json dataUsingEncoding:NSUTF8StringEncoding];
     __autoreleasing NSError* error = nil;
     id result = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
     if (error != nil) {

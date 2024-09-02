@@ -20,5 +20,6 @@ typedef void(^onSuccess)(NSString *eventName, id data);
 @property(nonatomic, strong) NSMutableArray *receiveMessages;
 @property(nonatomic, strong) NSMutableDictionary *recentContact;
 @property(nonatomic, assign) NSInteger sysUnreadCount;
+@property(nonatomic, assign) NSMutableDictionary *attachmentProgress;
 
 @end

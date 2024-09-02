@@ -33,12 +33,10 @@ public class UserInfoCache {
 	public void build() {
 		List<NimUserInfo> users = NIMClient.getService(UserService.class).getAllUserInfo();
 		updateUsers(users);
-		registerObserver(true);
 	}
 
 	public void clear() {
 		account2UserMap.clear();
-		registerObserver(false);
 	}
 
 	// ******************************* 业务接口（获取缓存信息） *********************************
@@ -228,17 +226,4 @@ public class UserInfoCache {
 			account2UserMap.put(u.getAccount(), u);
 		}
 	}
-
-	// ******************************* 事件监听 *********************************
-	public void registerObserver(boolean register) {
-		NIMClient.getService(UserServiceObserve.class).observeUserInfoUpdate(userInfoUpdateObserver, register);
-	}
-
-	private final Observer<List<NimUserInfo>> userInfoUpdateObserver = new Observer<List<NimUserInfo>>() {
-		@Override
-		public void onEvent(List<NimUserInfo> users) {
-			updateUsers(users);
-			ReactCache.emit(MessageConstant.Event.observeUserInfoUpdate, users);
-		}
-	};
 }

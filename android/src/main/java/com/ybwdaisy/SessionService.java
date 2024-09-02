@@ -5,19 +5,21 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.ResponseCode;
-import com.netease.nimlib.sdk.friend.FriendService;
 import com.netease.nimlib.sdk.msg.MessageBuilder;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.MsgServiceObserve;
 import com.netease.nimlib.sdk.msg.constant.DeleteTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.MsgStatusEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
+import com.netease.nimlib.sdk.msg.model.AttachmentProgress;
 import com.netease.nimlib.sdk.msg.model.CustomMessageConfig;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.QueryDirectionEnum;
@@ -25,8 +27,9 @@ import com.netease.nimlib.sdk.msg.model.RecentContact;
 import com.ybwdaisy.Attachment.DefaultCustomAttachment;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +60,13 @@ public class SessionService {
 		@Override
 		public void onEvent(List<IMMessage> messages) {
 			onIncomingMessage(messages);
+		}
+	};
+
+	Observer<AttachmentProgress> attachmentProgressObserver = new Observer<AttachmentProgress>() {
+		@Override
+		public void onEvent(AttachmentProgress attachmentProgress) {
+			onAttachmentProgress(attachmentProgress);
 		}
 	};
 
@@ -255,6 +265,7 @@ public class SessionService {
 		MsgServiceObserve service = NIMClient.getService(MsgServiceObserve.class);
 		service.observeMsgStatus(messageStatusObserver, register);
 		service.observeReceiveMessage(incomingMessageObserver, register);
+		service.observeAttachmentProgress(attachmentProgressObserver, register);
 	}
 
 	private void onMessageStatusChange(IMMessage message) {
@@ -283,6 +294,16 @@ public class SessionService {
 		}
 		Object data = ReactCache.createMessageList(addedListItems);
 		ReactCache.emit(MessageConstant.Event.observeReceiveMessage, data);
+	}
+
+	public void onAttachmentProgress(AttachmentProgress attachmentProgress) {
+		WritableMap result = Arguments.createMap();
+		result.putString("uuid", attachmentProgress.getUuid());
+		BigDecimal transferred = new BigDecimal(attachmentProgress.getTransferred());
+		BigDecimal total = new BigDecimal(attachmentProgress.getTotal());
+		Double progress = transferred.divide(total, 10, RoundingMode.HALF_UP).doubleValue();
+		result.putDouble("progress", progress);
+		ReactCache.emit(MessageConstant.Event.observeAttachmentProgress, result);
 	}
 
 	/****************************** 工具方法 ***********************************/

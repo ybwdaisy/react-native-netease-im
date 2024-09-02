@@ -239,9 +239,11 @@
             onlineStatus = @"6";
             break;
         case NIMLoginStepSyncing:
+            onlineStatus = @"7";
             loginSyncDataStatus = @"1";
             break;
         case NIMLoginStepSyncOK:
+            onlineStatus = @"8";
             loginSyncDataStatus = @"2";
             break;
         case NIMLoginStepLoseConnection:
@@ -279,6 +281,11 @@
     NSMutableArray *messages = [[NSMutableArray alloc] initWithObjects:message, nil];
     NSMutableArray *newMessages = [MessageUtils createMessageList:messages];
     [ShareDataManager shared].messageList = newMessages;
+    
+    NSMutableDictionary *attachmentProgress = [NSMutableDictionary dictionary];
+    [attachmentProgress setValue:message.messageId forKey:@"uuid"];
+    [attachmentProgress setValue:@(progress) forKey:@"progress"];
+    [ShareDataManager shared].attachmentProgress = attachmentProgress;
 }
 
 - (void)sendMessage:(NIMMessage *)message didCompleteWithError:(nullable NSError *)error {

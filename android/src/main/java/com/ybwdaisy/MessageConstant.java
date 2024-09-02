@@ -92,13 +92,12 @@ public class MessageConstant {
 	}
 
 	public static class Event {
-		public final static String observeSDKInit = "observeSDKInit";//SDK初始化完成
 		public final static String observeOnlineStatus = "observeOnlineStatus";//'在线状态'
 		public final static String observeLoginSyncDataStatus = "observeLoginSyncDataStatus";//登录状态
 		public final static String observeRecentContact = "observeRecentContact";//'最近会话''
 		public final static String observeReceiveMessage = "observeReceiveMessage";//'接收消息'
 		public final static String observeMsgStatus = "observeMsgStatus";//'发送消息状态变化'
-		public final static String observeUserInfoUpdate = "observeUserInfoUpdate"; //'用户信息更新'
+		public final static String observeAttachmentProgress = "observeAttachmentProgress";//'上传下载进度'
 		public final static String observeSysUnreadCount = "observeSysUnreadCount";//'系统消息未读数'
 		public final static String observeReceiveSystemMsg = "observeReceiveSystemMsg";//'系统消息'
 		public final static String observeBackgroundPushEvent = "observeBackgroundPushEvent";//'后台推送'

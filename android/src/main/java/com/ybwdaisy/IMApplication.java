@@ -28,8 +28,6 @@ public class IMApplication {
 		NIMClient.getService(MsgService.class).registerCustomAttachmentParser(new CustomAttachParser());
 		//缓存
 		buildCache();
-		//事件监听
-		registerObserver();
 	}
 
 	private static SDKOptions getOptions(String appKey, MixPushConfig mixPushConfig) {
@@ -43,16 +41,5 @@ public class IMApplication {
 	private static void buildCache() {
 		UserInfoCache.getInstance().build();
 		FriendCache.getInstance().build();
-	}
-
-	private static void registerObserver() {
-		NIMClient.getService(SdkLifecycleObserver.class).observeMainProcessInitCompleteResult(new Observer<Boolean>() {
-			@Override
-			public void onEvent(Boolean aBoolean) {
-				if (aBoolean != null && aBoolean) {
-					ReactCache.emit(MessageConstant.Event.observeSDKInit, null);
-				}
-			}
-		}, true);
 	}
 }
