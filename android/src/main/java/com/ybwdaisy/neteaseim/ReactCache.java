@@ -1,4 +1,4 @@
-package com.ybwdaisy;
+package com.ybwdaisy.neteaseim;
 
 import android.text.TextUtils;
 
@@ -25,8 +25,8 @@ import com.netease.nimlib.sdk.msg.constant.SystemMessageType;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
 import com.netease.nimlib.sdk.msg.model.SystemMessage;
-import com.ybwdaisy.Attachment.CustomAttachment;
-import com.ybwdaisy.Attachment.DefaultCustomAttachment;
+import com.ybwdaisy.neteaseim.Attachment.CustomAttachment;
+import com.ybwdaisy.neteaseim.Attachment.DefaultCustomAttachment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -291,10 +291,11 @@ public class ReactCache {
 	}
 
 	// ******************************* 处理会话 *********************************
-	public static Object createRecentList(List<RecentContact> recents) {
+	public static Object createRecentList(List <RecentContact> recents) {
 		WritableArray array = Arguments.createArray();
 		int unreadNumTotal = 0;
 		if (recents != null && recents.size() > 0) {
+
 			WritableMap map;
 			for (RecentContact contact : recents) {
 				map = Arguments.createMap();

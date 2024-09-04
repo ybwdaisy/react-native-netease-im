@@ -1,4 +1,4 @@
-package com.ybwdaisy;
+package com.ybwdaisy.neteaseim;
 
 public class MessageConstant {
 	public class MsgType {

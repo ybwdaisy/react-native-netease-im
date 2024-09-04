@@ -1,4 +1,4 @@
-package com.ybwdaisy;
+package com.ybwdaisy.neteaseim;
 
 import android.app.Activity;
 import android.content.Intent;

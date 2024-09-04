@@ -1,4 +1,4 @@
-package com.ybwdaisy;
+package com.ybwdaisy.neteaseim;
 
 import android.net.Uri;
 import android.text.TextUtils;
@@ -24,7 +24,7 @@ import com.netease.nimlib.sdk.msg.model.CustomMessageConfig;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.QueryDirectionEnum;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
-import com.ybwdaisy.Attachment.DefaultCustomAttachment;
+import com.ybwdaisy.neteaseim.Attachment.DefaultCustomAttachment;
 
 import java.io.File;
 import java.math.BigDecimal;

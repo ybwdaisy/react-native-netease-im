@@ -1,15 +1,13 @@
-package com.ybwdaisy;
+package com.ybwdaisy.neteaseim;
 
 import android.content.Context;
 
 import com.netease.nimlib.sdk.NIMClient;
-import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.SDKOptions;
 import com.netease.nimlib.sdk.auth.LoginInfo;
-import com.netease.nimlib.sdk.lifecycle.SdkLifecycleObserver;
 import com.netease.nimlib.sdk.mixpush.MixPushConfig;
 import com.netease.nimlib.sdk.msg.MsgService;
-import com.ybwdaisy.Attachment.CustomAttachParser;
+import com.ybwdaisy.neteaseim.Attachment.CustomAttachParser;
 
 import java.util.Map;
 

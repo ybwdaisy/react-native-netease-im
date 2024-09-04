@@ -1,4 +1,4 @@
-package com.ybwdaisy;
+package com.ybwdaisy.neteaseim;
 
 import com.alibaba.fastjson.JSONObject;
 import com.facebook.react.bridge.ReadableArray;

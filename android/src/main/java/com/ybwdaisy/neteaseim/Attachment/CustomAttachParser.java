@@ -1,11 +1,9 @@
-package com.ybwdaisy.Attachment;
+package com.ybwdaisy.neteaseim.Attachment;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.netease.nimlib.sdk.msg.attachment.MsgAttachment;
 import com.netease.nimlib.sdk.msg.attachment.MsgAttachmentParser;
-
-import org.json.JSONException;
 
 public class CustomAttachParser implements MsgAttachmentParser {
 	@Override

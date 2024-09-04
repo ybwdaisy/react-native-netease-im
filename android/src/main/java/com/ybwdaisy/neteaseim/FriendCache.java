@@ -1,4 +1,4 @@
-package com.ybwdaisy;
+package com.ybwdaisy.neteaseim;
 
 import android.text.TextUtils;
 
@@ -36,6 +36,9 @@ public class FriendCache {
 
 	public void build() {
 		List<Friend> friends = NIMClient.getService(FriendService.class).getFriends();
+		if (friends == null || friends.isEmpty()) {
+			return;
+		}
 		for (Friend f : friends) {
 			friendMap.put(f.getAccount(), f);
 		}
