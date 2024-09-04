@@ -185,6 +185,7 @@ public class SessionService {
 			return;
 		}
 		if (TextUtils.isEmpty(messageId)) {
+			messageQueryListener.onResult(-1, null);
 			return;
 		}
 		List<String> uuids = new ArrayList<>();
@@ -205,10 +206,13 @@ public class SessionService {
 		queryMessageById(messageId, new MessageQueryListener() {
 			@Override
 			public int onResult(int code, IMMessage message) {
-				if (message != null) {
-					getMsgService().queryMessageListEx(message, QueryDirectionEnum.QUERY_OLD, limit, true).setCallback(new RequestCallbackWrapper<List<IMMessage>>() {
-						@Override
-						public void onResult(int code, List<IMMessage> messageList, Throwable exception) {
+				IMMessage anchor = message;
+				if (anchor == null) {
+					anchor = MessageBuilder.createEmptyMessage(sessionId, sessionTypeEnum, 0);
+				}
+				getMsgService().queryMessageListEx(anchor, QueryDirectionEnum.QUERY_OLD, limit, true).setCallback(new RequestCallbackWrapper<List<IMMessage>>() {
+					@Override
+					public void onResult(int code, List<IMMessage> messageList, Throwable exception) {
 						if (code == ResponseCode.RES_SUCCESS && messageList != null && !messageList.isEmpty()) {
 							for (int i = messageList.size() - 1; i >= 0; i--) {
 								IMMessage message = messageList.get(i);
@@ -223,9 +227,8 @@ public class SessionService {
 								promise.resolve(a);
 							}
 						}
-						}
-					});
-				}
+					}
+				});
 				return code;
 			}
 		});

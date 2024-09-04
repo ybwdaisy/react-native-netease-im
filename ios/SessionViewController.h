@@ -31,7 +31,7 @@ typedef void(^Errors)(id error);
 - (Boolean)isMyFriend;
 - (NSInteger)getTotalUnreadCount;
 - (void)clearAllUnreadCount;
-- (void)queryMessageListEx:(nonnull NSString *)messageId withLimit:(NSInteger)limit success:(Success)success error:(Errors)error;
+- (void)queryMessageListEx:(NSString *)messageId withLimit:(NSInteger)limit success:(Success)success error:(Errors)error;
 - (void)queryRecentContacts:(Success)success error:(Errors)error;
 - (void)deleteRecentContact:(nonnull NSString *)sessionId;
 

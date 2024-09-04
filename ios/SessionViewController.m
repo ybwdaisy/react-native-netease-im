@@ -10,7 +10,7 @@
 @interface SessionViewController () <NIMLoginManagerDelegate, NIMChatManagerDelegate, NIMConversationManagerDelegate, NIMSystemNotificationManagerDelegate>
 
 @property (nonatomic, strong, readwrite) NSString *sessionId;
-@property (nonatomic, readwrite) NIMSessionType *sessionType;
+@property (nonatomic, strong, readwrite) NSString *sessionType;
 @property (nonatomic, strong, readwrite) NIMSession *session;
 
 @end
@@ -26,6 +26,9 @@
     return instance;
 }
 
++ (BOOL)requiresMainQueueSetup {
+    return NO;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -44,8 +47,8 @@
 
 - (void)startSession:(NSString *)sessionId withType:(NSString *)type {
     _sessionId = sessionId;
-    _sessionType = [type integerValue];
-    _session = [NIMSession session:_sessionId type:*(_sessionType)];
+    _sessionType = type;
+    _session = [NIMSession session:sessionId type:[type integerValue]];
 }
 
 - (void)stopSession {
@@ -155,7 +158,7 @@
     [[[NIMSDK sharedSDK] conversationManager] markAllMessagesRead];
 }
 
-- (void)queryMessageListEx:(nonnull NSString *)messageId withLimit:(NSInteger)limit success:(Success)success error:(Errors)error {
+- (void)queryMessageListEx:(NSString *)messageId withLimit:(NSInteger)limit success:(Success)success error:(Errors)error {
     [[[NIMSDK sharedSDK] conversationManager] markAllMessagesReadInSession:_session];
     NIMMessage *anchorMessage = nil;
     if (messageId) {

@@ -8,10 +8,8 @@ public class MessageConstant {
 		public final static String VIDEO = "video";
 		public final static String FILE = "file";
 		public final static String ROBOT = "robot";
-		public final static String EVENT = "event";
 		public final static String NOTIFICATION = "notification";
 		public final static String TIP = "tip";
-		public final static String LINK = "url";
 		public final static String LOCATION = "location";
 		public final static String CUSTOM = "custom";
 	}

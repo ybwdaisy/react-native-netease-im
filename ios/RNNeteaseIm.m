@@ -29,6 +29,20 @@ RCT_EXPORT_MODULE()
     [NIMCustomObject registerCustomDecoder:[[CustomAttachmentDecoder alloc] init]];
 }
 
+-(NSArray<NSString *> *)supportedEvents {
+    return @[
+        observeOnlineStatus,
+        observeLoginSyncDataStatus,
+        observeMsgStatus,
+        observeRecentContact,
+        observeReceiveMessage,
+        observeAttachmentProgress,
+        observeSysUnreadCount,
+        observeReceiveSystemMsg,
+        observeBackgroundPushEvent,
+    ];
+}
+
 - (void)clickNotification:(NSNotification *)noti{
     NSDictionary *dict = noti.object;
     NSMutableDictionary *param = [NSMutableDictionary dictionaryWithDictionary:[dict objectForKey:@"dict"]];
@@ -70,8 +84,7 @@ RCT_EXPORT_MODULE()
     return result;
 }
 
-RCT_EXPORT_METHOD(login:(nonnull NSString *)account token:(nonnull NSString *)token resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
-{
+RCT_EXPORT_METHOD(login:(nonnull NSString *)account token:(nonnull NSString *)token resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     [[[NIMSDK sharedSDK] loginManager] login:account token:token completion:^(NSError * _Nullable error) {
         if (!error) {
             NIMPushNotificationSetting *setting = [[[NIMSDK sharedSDK] apnsManager] currentSetting];

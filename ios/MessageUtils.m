@@ -281,13 +281,7 @@
             text = @"[未知消息]";
             break;
     }
-    BOOL isSelf = lastMessage.from == [[[NIMSDK sharedSDK] loginManager] currentAccount];
-    if (isSelf || lastMessage.messageType == NIMMessageTypeTip) {
-        return text;
-    } else {
-        NSString *nickName = [MessageUtils getUserName:lastMessage.from];
-        return nickName.length ? [nickName stringByAppendingFormat:@":%@", text] : @"";
-    }
+    return text;
 }
 
 + (NSString *)getCustomText:(NIMMessage *)message {
