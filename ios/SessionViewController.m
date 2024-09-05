@@ -316,7 +316,7 @@
 }
 
 - (void)updateRecent:(NIMRecentSession *)recentSession totalUnreadCount:(NSInteger)totalUnreadCount {
-    NSMutableArray *recents = [[NSMutableArray alloc] initWithObjects:recents, nil];
+    NSMutableArray *recents = [[NSMutableArray alloc] initWithObjects:recentSession, nil];
     NSMutableDictionary *result = [MessageUtils createRecentContact:recents];
     [ShareDataManager shared].recentContact = result;
 }
@@ -324,7 +324,9 @@
 
 #pragma mark NIMSystemNotificationManagerDelegate
 - (void)onReceiveSystemNotification:(NIMSystemNotification *)notification {
-    
+    NSMutableArray *notifications= [[NSMutableArray alloc] initWithObjects:notification, nil];
+    NSMutableArray *result = [MessageUtils createSystemMsg:notifications];
+    [ShareDataManager shared].systemNotifications = result;
 }
 
 - (void)onSystemNotificationCountChanged:(NSInteger)unreadCount {

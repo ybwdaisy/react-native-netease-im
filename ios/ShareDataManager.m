@@ -58,6 +58,13 @@
     }
 }
 
+- (void)setSystemNotifications:(NSMutableArray *)systemNotifications {
+    _systemNotifications = systemNotifications;
+    if (self.eventBlock) {
+        self.eventBlock(observeReceiveSystemMsg, systemNotifications);
+    }
+}
+
 - (void)setSysUnreadCount:(NSInteger)sysUnreadCount {
     _sysUnreadCount = sysUnreadCount;
     if (self.eventBlock) {
