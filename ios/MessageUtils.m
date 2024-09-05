@@ -71,6 +71,7 @@
             [imgObj setObject:[NSString stringWithFormat:@"%f", [object size].height] forKey:@"height"];
             [imgObj setObject:[NSString stringWithFormat:@"%f", [object size].width] forKey:@"width"];
             [newMessage setObject:imgObj forKey:@"extend"];
+            break;
         }
         case NIMMessageTypeAudio: {
             NIMAudioObject *object = message.messageObject;
@@ -81,6 +82,7 @@
             [voiceObj setObject:[NSString stringWithFormat:@"%@", object.path] forKey:@"path"];
             [voiceObj setObject:[NSNumber numberWithInteger: object.duration] forKey:@"duration"];
             [newMessage setObject:voiceObj forKey:@"extend"];
+            break;
         }
         case NIMMessageTypeVideo: {
             NIMVideoObject *object = message.messageObject;
@@ -103,6 +105,7 @@
                 [videoObj setObject:[NSString stringWithFormat:@"%@", object.path] forKey:@"mediaPath"];
             }
             [newMessage setObject:videoObj forKey:@"extend"];
+            break;
         }
         case NIMMessageTypeLocation: {
             NIMLocationObject *object = message.messageObject;
@@ -111,11 +114,13 @@
             [locationObj setObject:[NSString stringWithFormat:@"%f", object.longitude] forKey:@"longitude"];
             [locationObj setObject:[NSString stringWithFormat:@"%@", object.title] forKey:@"title"];
             [newMessage setObject:locationObj forKey:@"extend"];
+            break;
         }
         case NIMMessageTypeTip: {
             NSMutableDictionary *tipObj = [NSMutableDictionary dictionary];
             [tipObj setObject:message.text forKey:@"tipMsg"];
             [newMessage setObject:tipObj forKey:@"extend"];
+            break;
         }
         case NIMMessageTypeCustom: {
             NIMCustomObject *customObject = message.messageObject;
@@ -125,6 +130,7 @@
                     [newMessage setObject:attachment.data forKey:@"extend"];
                 }
             }
+            break;
         }
         default:
             break;

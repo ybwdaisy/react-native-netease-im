@@ -179,6 +179,7 @@ RCT_EXPORT_METHOD(deleteRecentContact:(NSString *)sessionId) {
 
 - (void)setSendEvent {
     [ShareDataManager shared].eventBlock = ^(NSString *eventName, id data) {
+        NSLog(@"eventName: %@, data: %@", eventName, data);
         [self sendEventWithName:eventName body:data];
     };
 }

@@ -169,7 +169,8 @@
     
     NSArray *messageList = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_session message:anchorMessage limit:limit];
     if (messageList.count > 0) {
-        success([MessageUtils createMessageList:messageList]);
+        NSMutableArray *finalMessages = [MessageUtils createMessageList:messageList];
+        success(finalMessages);
     } else {
         error(@"暂无更多");
     }
