@@ -2,6 +2,7 @@ package com.ybwdaisy.neteaseim;
 
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -11,6 +12,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
+import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.msg.MessageBuilder;
@@ -49,27 +51,6 @@ public class SessionService {
 		return InstanceHolder.instance;
 	}
 
-	Observer<IMMessage> messageStatusObserver = new Observer<IMMessage>() {
-		@Override
-		public void onEvent(IMMessage message) {
-			onMessageStatusChange(message);
-		}
-	};
-
-	Observer<List<IMMessage>> incomingMessageObserver = new Observer<List<IMMessage>>() {
-		@Override
-		public void onEvent(List<IMMessage> messages) {
-			onIncomingMessage(messages);
-		}
-	};
-
-	Observer<AttachmentProgress> attachmentProgressObserver = new Observer<AttachmentProgress>() {
-		@Override
-		public void onEvent(AttachmentProgress attachmentProgress) {
-			onAttachmentProgress(attachmentProgress);
-		}
-	};
-
 	public Map<String, Object> getPushPayload() {
 		return pushPayload;
 	}
@@ -79,11 +60,12 @@ public class SessionService {
 	}
 
 	public void startSession(String sessionId, String type) {
+		Log.i(TAG, "startSession sessionId: " + sessionId);
 		this.sessionId = sessionId;
 		this.sessionTypeEnum = getSessionType(type);
+		Log.i(TAG, "startSession login status: " + NIMClient.getStatus().wontAutoLogin());
 		registerObservers(true);
-		getMsgService().setChattingAccount(MsgService.MSG_CHATTING_ACCOUNT_NONE,
-				SessionTypeEnum.None);
+		getMsgService().setChattingAccount(sessionId, sessionTypeEnum);
 	}
 
 	public void stopSession() {
@@ -173,7 +155,23 @@ public class SessionService {
 		CustomMessageConfig config = new CustomMessageConfig();
 		message.setConfig(config);
 		setPushConfig(message);
-		getMsgService().sendMessage(message, resend);
+		Log.i(TAG, "doSendMessage login status: " + NIMClient.getStatus());
+		getMsgService().sendMessage(message, resend).setCallback(new RequestCallback<Void>() {
+			@Override
+			public void onSuccess(Void result) {
+				Log.i(TAG, "doSendMessage success: " + result);
+			}
+
+			@Override
+			public void onFailed(int code) {
+				Log.i(TAG, "doSendMessage fail: " + code);
+			}
+
+			@Override
+			public void onException(Throwable exception) {
+				Log.e(TAG, "doSendMessage exception: " + exception.getLocalizedMessage());
+			}
+		});
 	}
 
 	public boolean isMyFriend() {
@@ -203,6 +201,7 @@ public class SessionService {
 	}
 
 	public void queryMessageListEx(String messageId, final int limit, final Promise promise) {
+		Log.i(TAG, "messageId: " + messageId);
 		queryMessageById(messageId, new MessageQueryListener() {
 			@Override
 			public int onResult(int code, IMMessage message) {
@@ -213,20 +212,16 @@ public class SessionService {
 				getMsgService().queryMessageListEx(anchor, QueryDirectionEnum.QUERY_OLD, limit, true).setCallback(new RequestCallbackWrapper<List<IMMessage>>() {
 					@Override
 					public void onResult(int code, List<IMMessage> messageList, Throwable exception) {
-						if (code == ResponseCode.RES_SUCCESS && messageList != null && !messageList.isEmpty()) {
-							for (int i = messageList.size() - 1; i >= 0; i--) {
-								IMMessage message = messageList.get(i);
-								if (message == null) {
-									messageList.remove(i);
-								}
-							}
-							if (messageList.isEmpty()) {
-								promise.reject("-1", "获取历史消息失败");
-							} else {
-								Object a = ReactCache.createMessageList(messageList);
-								promise.resolve(a);
-							}
+						if (code == ResponseCode.RES_SUCCESS) {
+							Object result = ReactCache.createMessageList(messageList);
+							promise.resolve(result);
+						} else {
+							promise.reject("-1", "获取历史消息失败: " + code);
 						}
+					}
+
+					public void onFailed(int code) {
+						promise.reject("-1", "获取历史消息失败: " + code);
 					}
 				});
 				return code;
@@ -238,11 +233,11 @@ public class SessionService {
 		getMsgService().queryRecentContacts().setCallback(new RequestCallbackWrapper<List<RecentContact>>() {
 			@Override
 			public void onResult(int code, List<RecentContact> recentContacts, Throwable exception) {
-				if (recentContacts != null && !recentContacts.isEmpty()) {
-					promise.resolve(ReactCache.createRecentList(recentContacts));
-				} else {
-					promise.reject(String.valueOf(code), "获取最近会话失败");
-				}
+				promise.resolve(ReactCache.createRecentList(recentContacts));
+			}
+			@Override
+			public void onFailed(int code) {
+				promise.reject(String.valueOf(code), "获取最近会话失败");
 			}
 		});
 	}
@@ -268,9 +263,33 @@ public class SessionService {
 		}
 		hasRegister = register;
 		MsgServiceObserve service = NIMClient.getService(MsgServiceObserve.class);
-		service.observeMsgStatus(messageStatusObserver, register);
-		service.observeReceiveMessage(incomingMessageObserver, register);
-		service.observeAttachmentProgress(attachmentProgressObserver, register);
+		service.observeMsgStatus(new Observer<IMMessage>() {
+			@Override
+			public void onEvent(IMMessage message) {
+				onMessageStatusChange(message);
+			}
+		}, register);
+
+		service.observeReceiveMessage(new Observer<List<IMMessage>>() {
+			@Override
+			public void onEvent(List<IMMessage> messages) {
+				onIncomingMessage(messages);
+			}
+		}, register);
+
+		service.observeRecentContact(new Observer<List<RecentContact>>() {
+			@Override
+			public void onEvent(List<RecentContact> recentContacts) {
+				onRecentContact(recentContacts);
+			}
+		}, register);
+
+		service.observeAttachmentProgress(new Observer<AttachmentProgress>() {
+			@Override
+			public void onEvent(AttachmentProgress attachmentProgress) {
+				onAttachmentProgress(attachmentProgress);
+			}
+		}, register);
 	}
 
 	private void onMessageStatusChange(IMMessage message) {
@@ -299,6 +318,10 @@ public class SessionService {
 		}
 		Object data = ReactCache.createMessageList(addedListItems);
 		ReactCache.emit(MessageConstant.Event.observeReceiveMessage, data);
+	}
+
+	public void onRecentContact(List<RecentContact> recentContacts) {
+		ReactCache.emit(MessageConstant.Event.observeRecentContact, ReactCache.createRecentList(recentContacts));
 	}
 
 	public void onAttachmentProgress(AttachmentProgress attachmentProgress) {

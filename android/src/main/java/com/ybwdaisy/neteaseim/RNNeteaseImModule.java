@@ -3,6 +3,9 @@ package com.ybwdaisy.neteaseim;
 import android.app.Activity;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
@@ -19,10 +22,10 @@ import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 
 public class RNNeteaseImModule extends ReactContextBaseJavaModule implements ActivityEventListener {
-
+    private final static String TAG = "RNNeteaseImModule";
     private final ReactApplicationContext reactContext;
-    private LoginService loginService;
-    private SessionService sessionService;
+    private final LoginService loginService;
+    private final SessionService sessionService;
 
     public RNNeteaseImModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -32,6 +35,7 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule implements Act
         sessionService = SessionService.getInstance();
     }
 
+    @NonNull
     @Override
     public String getName() {
         return "RNNeteaseIm";
@@ -40,11 +44,11 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule implements Act
     @ReactMethod
     public void login(String contactId, String token, final Promise promise) {
         LoginInfo loginInfo = new LoginInfo(contactId, token);
-
         loginService.login(loginInfo, new RequestCallback<LoginInfo>() {
             @Override
             public void onSuccess(LoginInfo result) {
-                promise.resolve(loginInfo.getAccount());
+                Log.i(TAG, "login success: " + result);
+                promise.resolve(result.getAccount());
             }
 
             @Override
@@ -55,6 +59,7 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule implements Act
                 } else {
                     msg = "登录失败:" + code;
                 }
+                Log.i(TAG, "login error: " + msg);
                 promise.reject(Integer.toString(code), msg);
             }
 

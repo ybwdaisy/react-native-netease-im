@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.SDKOptions;
-import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.mixpush.MixPushConfig;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.ybwdaisy.neteaseim.Attachment.CustomAttachParser;
@@ -17,9 +16,8 @@ public class IMApplication {
 
 	public static void init(Context context, String appKey, MixPushConfig mixPushConfig, Map<String, Object> pushPayload) {
 		context = context.getApplicationContext();
-		LoginInfo loginInfo = LoginService.getInstance().getLoginInfo(context);
 		SDKOptions sdkOptions = getOptions(appKey, mixPushConfig);
-		NIMClient.init(context, loginInfo, sdkOptions);
+		NIMClient.init(context, null, sdkOptions);
 		//设置推送参数
 		SessionService.getInstance().setPushPayload(pushPayload);
 		//注册附件解析器

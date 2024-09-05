@@ -167,24 +167,25 @@
         anchorMessage = messages[0];
     }
     
-    NSArray *messageList = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_session message:anchorMessage limit:limit];
-    if (messageList.count > 0) {
-        NSMutableArray *finalMessages = [MessageUtils createMessageList:messageList];
+    [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_session message:anchorMessage limit:limit completion:^(NSError * _Nullable err, NSArray<NIMMessage *> * _Nullable messages) {
+        if (err != nil || messages == nil) {
+            error(@"获取历史消息失败");
+            return;
+        }
+        NSMutableArray *finalMessages = [MessageUtils createMessageList:messages];
         success(finalMessages);
-    } else {
-        error(@"暂无更多");
-    }
+    }];
+    
 }
 
 - (void)queryRecentContacts:(Success)success error:(Errors)error {
     NSMutableArray *allRecentSessions = [[[NIMSDK sharedSDK] conversationManager] allRecentSessions];
-    if (allRecentSessions.count > 0) {
-        NSMutableDictionary *sessionDict = [MessageUtils createRecentContact:allRecentSessions];
-        success(sessionDict);
-    } else {
+    if (allRecentSessions == nil) {
         error(@"获取最近会话失败");
+        return;
     }
-    
+    NSMutableDictionary *sessionDict = [MessageUtils createRecentContact:allRecentSessions];
+    success(sessionDict);
 }
 
 - (void)deleteRecentContact:(nonnull NSString *)sessionId {

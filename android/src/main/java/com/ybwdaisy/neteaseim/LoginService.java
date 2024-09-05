@@ -23,8 +23,6 @@ import java.util.List;
 public class LoginService {
 	private final static String TAG = "LoginService";
 	private String account;
-	private String token;
-	private AbortableFuture<LoginInfo> loginInfoFuture;
 
 	static class InstanceHolder {
 		final static LoginService instance = new LoginService();
@@ -34,28 +32,20 @@ public class LoginService {
 		return InstanceHolder.instance;
 	}
 
-	public LoginInfo getLoginInfo(Context context) {
-		LoginInfo info = new LoginInfo(account, token);
-		return info;
-	}
-
 	public String getAccount() {
 		return account;
 	}
 
 	public void login(final LoginInfo loginInfo, final RequestCallback<LoginInfo> callback) {
 		NIMClient.getService(AuthService.class).openLocalCache(loginInfo.getAccount());
-		loginInfoFuture = NIMClient.getService(AuthService.class).login(loginInfo);
-		loginInfoFuture.setCallback(new RequestCallback<LoginInfo>() {
+		NIMClient.getService(AuthService.class).login(loginInfo).setCallback(new RequestCallback<LoginInfo>() {
 			@Override
 			public void onSuccess(LoginInfo loginInfo) {
 				account = loginInfo.getAccount();
-				token = loginInfo.getToken();
 				if (callback != null) {
 					callback.onSuccess(loginInfo);
 				}
 				registerObserver(true);
-				loginInfoFuture = null;
 			}
 
 			@Override
@@ -64,7 +54,6 @@ public class LoginService {
 					callback.onFailed(code);
 				}
 				registerObserver(false);
-				loginInfoFuture = null;
 			}
 
 			@Override
@@ -73,7 +62,6 @@ public class LoginService {
 					callback.onException(exception);
 				}
 				registerObserver(false);
-				loginInfoFuture = null;
 			}
 		});
 	}
@@ -84,7 +72,6 @@ public class LoginService {
 		FriendCache.getInstance().clear();
 		//清除账号
 		account = null;
-		token = null;
 		registerObserver(false);
 	}
 
@@ -100,23 +87,6 @@ public class LoginService {
 		authServiceObserver.observeLoginSyncDataStatus(new Observer<LoginSyncStatus>() {
 			public void onEvent(LoginSyncStatus status) {
 				ReactCache.emit(MessageConstant.Event.observeLoginSyncDataStatus, status);
-			}
-		}, register);
-
-		// 会话消息
-		MsgServiceObserve msgServiceObserve = NIMClient.getService(MsgServiceObserve.class);
-		msgServiceObserve.observeReceiveMessage(new Observer<List<IMMessage>>() {
-			@Override
-			public void onEvent(List<IMMessage> imMessages) {
-				ReactCache.emit(MessageConstant.Event.observeReceiveMessage, ReactCache.createMessageList(imMessages));
-			}
-		}, register);
-		msgServiceObserve.observeRecentContact(new Observer<List<RecentContact>>() {
-			@Override
-			public void onEvent(List<RecentContact> recentContacts) {
-				if (recentContacts != null && !recentContacts.isEmpty()) {
-					ReactCache.emit(MessageConstant.Event.observeRecentContact, ReactCache.createRecentList(recentContacts));
-				}
 			}
 		}, register);
 
