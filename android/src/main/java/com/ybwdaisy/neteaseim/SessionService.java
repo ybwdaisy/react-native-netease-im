@@ -40,7 +40,7 @@ public class SessionService {
 	private SessionTypeEnum sessionTypeEnum = SessionTypeEnum.None;
 	private String sessionId;
 	private boolean hasRegister;
-	private volatile MsgService msgService;
+	MsgService msgService;
 	Map<String, Object> pushPayload;
 
 	static class InstanceHolder {

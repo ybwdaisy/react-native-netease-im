@@ -1,6 +1,7 @@
 package com.ybwdaisy.neteaseim;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.netease.nimlib.sdk.AbortableFuture;
 import com.netease.nimlib.sdk.NIMClient;
@@ -23,6 +24,7 @@ import java.util.List;
 public class LoginService {
 	private final static String TAG = "LoginService";
 	private String account;
+	private String token;
 
 	static class InstanceHolder {
 		final static LoginService instance = new LoginService();
@@ -36,14 +38,18 @@ public class LoginService {
 		return account;
 	}
 
+	public LoginInfo getLoginInfo() {
+		return new LoginInfo(account, token);
+	}
+
 	public void login(final LoginInfo loginInfo, final RequestCallback<LoginInfo> callback) {
-		NIMClient.getService(AuthService.class).openLocalCache(loginInfo.getAccount());
 		NIMClient.getService(AuthService.class).login(loginInfo).setCallback(new RequestCallback<LoginInfo>() {
 			@Override
-			public void onSuccess(LoginInfo loginInfo) {
-				account = loginInfo.getAccount();
+			public void onSuccess(LoginInfo result) {
+				account = result.getAccount();
+				token = result.getToken();
 				if (callback != null) {
-					callback.onSuccess(loginInfo);
+					callback.onSuccess(result);
 				}
 				registerObserver(true);
 			}
@@ -72,33 +78,35 @@ public class LoginService {
 		FriendCache.getInstance().clear();
 		//清除账号
 		account = null;
+		token = null;
 		registerObserver(false);
 	}
 
 	private void registerObserver(Boolean register) {
 		// 登录状态
-		AuthServiceObserver authServiceObserver = NIMClient.getService(AuthServiceObserver.class);
-		authServiceObserver.observeOnlineStatus(new Observer<StatusCode>() {
+		NIMClient.getService(AuthServiceObserver.class).observeOnlineStatus(new Observer<StatusCode>() {
 			public void onEvent(StatusCode status) {
+				Log.i(TAG, "onlineStatus: " + status);
 				ReactCache.emit(MessageConstant.Event.observeOnlineStatus, status.getValue());
 			}
 		}, register);
 
-		authServiceObserver.observeLoginSyncDataStatus(new Observer<LoginSyncStatus>() {
+		NIMClient.getService(AuthServiceObserver.class).observeLoginSyncDataStatus(new Observer<LoginSyncStatus>() {
 			public void onEvent(LoginSyncStatus status) {
+				Log.i(TAG, "loginSyncStatus: " + status);
 				ReactCache.emit(MessageConstant.Event.observeLoginSyncDataStatus, status);
 			}
 		}, register);
 
 		// 系统消息
-		SystemMessageObserver systemMessageObserver = NIMClient.getService(SystemMessageObserver.class);
-		systemMessageObserver.observeUnreadCountChange(new Observer<Integer>() {
+		NIMClient.getService(SystemMessageObserver.class).observeUnreadCountChange(new Observer<Integer>() {
 			@Override
 			public void onEvent(Integer unreadCount) {
 				ReactCache.emit(MessageConstant.Event.observeSysUnreadCount, unreadCount);
 			}
 		}, register);
-		systemMessageObserver.observeReceiveSystemMsg(new Observer<SystemMessage>() {
+
+		NIMClient.getService(SystemMessageObserver.class).observeReceiveSystemMsg(new Observer<SystemMessage>() {
 			@Override
 			public void onEvent(SystemMessage systemMessage) {
 				List<SystemMessage> list = new ArrayList<>();

@@ -42,8 +42,8 @@ public class RNNeteaseImModule extends ReactContextBaseJavaModule implements Act
     }
 
     @ReactMethod
-    public void login(String contactId, String token, final Promise promise) {
-        LoginInfo loginInfo = new LoginInfo(contactId, token);
+    public void login(String account, String token, final Promise promise) {
+        LoginInfo loginInfo = new LoginInfo(account, token);
         loginService.login(loginInfo, new RequestCallback<LoginInfo>() {
             @Override
             public void onSuccess(LoginInfo result) {
