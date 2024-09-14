@@ -18,6 +18,9 @@ typedef void(^Errors)(id error);
 
 + (instancetype)sessionManager;
 
+- (void)addDelegate;
+- (void)removeDelegate;
+
 - (void)startSession:(NSString *)sessionId withType:(NSString *)type;
 - (void)stopSession;
 

@@ -1,6 +1,7 @@
 package com.ybwdaisy.neteaseim;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
@@ -48,6 +49,7 @@ public class ReactCache {
 	}
 
 	public static void emit(String eventName, Object data) {
+		Log.i(TAG, "eventName: " + eventName + " data: " + data);
 		try {
 			reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, data);
 		} catch (Exception e) {
@@ -391,7 +393,7 @@ public class ReactCache {
 		}
 		WritableMap writableMap = Arguments.createMap();
 		writableMap.putArray(MessageConstant.Contact.RECENTS, array);
-		writableMap.putString(MessageConstant.Contact.UNREAD_COUNT, Integer.toString(unreadNumTotal));
+		writableMap.putInt(MessageConstant.Contact.UNREAD_COUNT, unreadNumTotal);
 		return writableMap;
 	}
 

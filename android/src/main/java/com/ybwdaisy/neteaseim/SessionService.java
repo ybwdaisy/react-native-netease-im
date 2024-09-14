@@ -63,7 +63,6 @@ public class SessionService {
 		Log.i(TAG, "startSession sessionId: " + sessionId);
 		this.sessionId = sessionId;
 		this.sessionTypeEnum = getSessionType(type);
-		Log.i(TAG, "startSession login status: " + NIMClient.getStatus().wontAutoLogin());
 		registerObservers(true);
 		getMsgService().setChattingAccount(sessionId, sessionTypeEnum);
 	}
@@ -155,7 +154,6 @@ public class SessionService {
 		CustomMessageConfig config = new CustomMessageConfig();
 		message.setConfig(config);
 		setPushConfig(message);
-		Log.i(TAG, "doSendMessage login status: " + NIMClient.getStatus());
 		getMsgService().sendMessage(message, resend).setCallback(new RequestCallback<Void>() {
 			@Override
 			public void onSuccess(Void result) {
@@ -301,8 +299,8 @@ public class SessionService {
 		}
 	}
 
-	public void onIncomingMessage(@NonNull List<IMMessage> messages) {
-		if (messages.isEmpty()) {
+	public void onIncomingMessage(List<IMMessage> messages) {
+		if (messages == null || messages.isEmpty()) {
 			return;
 		}
 		boolean needRefresh = false;

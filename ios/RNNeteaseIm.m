@@ -2,17 +2,28 @@
 
 @implementation RNNeteaseIm
 
+- (dispatch_queue_t)methodQueue {
+    return dispatch_get_main_queue();
+}
+
 RCT_EXPORT_MODULE()
 
 - (instancetype)init {
     self = [super init];
     if (self) {
         [self setSendEvent];
-        
+        [[SessionViewController sessionManager]addDelegate];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(clickNotification:) name:@"NETEASE_APNS_NOTIFICATION_ARRIVED_EVENT" object:nil];
-        
     }
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter]removeObserver:self];
+}
+
++ (BOOL)requiresMainQueueSetup {
+    return YES;
 }
 
 + (void)updateApnsToken:(NSData *)token customContentKey:(nullable NSString *)key {

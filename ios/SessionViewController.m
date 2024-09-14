@@ -21,41 +21,38 @@
     static SessionViewController *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [[self alloc] init];
+        instance = [[SessionViewController alloc] init];
     });
     return instance;
 }
 
-+ (BOOL)requiresMainQueueSetup {
-    return NO;
+- (void)addDelegate {
+    [[[NIMSDK sharedSDK] loginManager] addDelegate:self];
+    [[[NIMSDK sharedSDK] chatManager] addDelegate:self];
+    [[[NIMSDK sharedSDK] conversationManager] addDelegate:self];
+    [[[NIMSDK sharedSDK] systemNotificationManager] addDelegate:self];
+}
+
+- (void)removeDelegate {
+    [[[NIMSDK sharedSDK] loginManager] removeDelegate:self];
+    [[[NIMSDK sharedSDK] chatManager] removeDelegate:self];
+    [[[NIMSDK sharedSDK] conversationManager] removeDelegate:self];
+    [[[NIMSDK sharedSDK] systemNotificationManager] removeDelegate:self];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
 }
 
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        [[[NIMSDK sharedSDK] loginManager] addDelegate:self];
-        [[[NIMSDK sharedSDK] chatManager] addDelegate:self];
-        [[[NIMSDK sharedSDK] conversationManager] addDelegate:self];
-        [[[NIMSDK sharedSDK] systemNotificationManager] addDelegate:self];
-    }
-    return self;
-}
-
 - (void)startSession:(NSString *)sessionId withType:(NSString *)type {
     _sessionId = sessionId;
     _sessionType = type;
     _session = [NIMSession session:sessionId type:[type integerValue]];
+    [self addDelegate];
 }
 
 - (void)stopSession {
-    [[[NIMSDK sharedSDK] loginManager] removeDelegate:self];
-    [[[NIMSDK sharedSDK] chatManager] removeDelegate:self];
-    [[[NIMSDK sharedSDK] conversationManager] removeDelegate:self];
-    [[[NIMSDK sharedSDK] systemNotificationManager] removeDelegate:self];
+    [self removeDelegate];
 }
 
 - (void)sendTextMessage:(NSString *)text {
@@ -300,6 +297,7 @@
 }
 
 - (void)onRecvMessages:(NSArray<NIMMessage *> *)messages {
+    [[[NIMSDK sharedSDK] conversationManager] markAllMessagesReadInSession:_session];
     NSMutableArray *receiveMessages = [MessageUtils createMessageList:messages];
     [ShareDataManager shared].receiveMessages = receiveMessages;
 }
