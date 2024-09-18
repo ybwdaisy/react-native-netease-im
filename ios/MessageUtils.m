@@ -151,7 +151,7 @@
         [newRecent setObject:[NSString stringWithFormat:@"%zd", recent.session.sessionType] forKey:@"sessionType"];
         [newRecent setObject:[NSString stringWithFormat:@"%zd", recent.unreadCount] forKey:@"unreadCount"];
         [newRecent setObject:[NSString stringWithFormat:@"%@", [MessageUtils getUserName:recent.session.sessionId]] forKey:@"name"];
-        [newRecent setObject:[NSString stringWithFormat:@"%@", recent.lastMessage.from] forKey:@"account"];
+        [newRecent setObject:[NSString stringWithFormat:@"%@", recent.lastMessage.from] forKey:@"fromAccount"];
         [newRecent setObject:[NSString stringWithFormat:@"%zd", recent.lastMessage.messageType] forKey:@"msgType"];
         [newRecent setObject:[NSString stringWithFormat:@"%zd", recent.lastMessage.deliveryState] forKey:@"msgStatus"];
         [newRecent setObject:[NSString stringWithFormat:@"%@", recent.lastMessage.messageId] forKey:@"messageId"];

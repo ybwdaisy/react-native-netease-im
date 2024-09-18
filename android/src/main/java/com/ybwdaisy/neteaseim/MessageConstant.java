@@ -47,9 +47,7 @@ public class MessageConstant {
 	public class Contact {
 		public static final String CONTACT_ID = "contactId";
 		public static final String UNREAD_COUNT = "unreadCount";
-		public static final String TEAM_TYPE = "teamType";
 		public static final String EXT = "ext";
-		public static final String MUTE = "mute";
 		public static final String IMAGE_PATH = "imagePath";
 		public static final String NAME = "name";
 		public static final String SESSION_TYPE = "sessionType";
@@ -58,9 +56,8 @@ public class MessageConstant {
 		public static final String MESSAGE_ID = "messageId";
 		public static final String FROM_ACCOUNT = "fromAccount";
 		public static final String TIME = "time";
-		public static final String NICK = "nick";
 		public static final String CONTENT = "content";
-		public static final String TYPE = "TYPE";
+		public static final String TYPE = "type";
 		public static final String RECENTS = "recents";
 	}
 

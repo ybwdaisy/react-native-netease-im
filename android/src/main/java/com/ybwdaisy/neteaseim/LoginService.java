@@ -7,11 +7,13 @@ import com.netease.nimlib.sdk.AbortableFuture;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
+import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.StatusCode;
 import com.netease.nimlib.sdk.auth.AuthService;
 import com.netease.nimlib.sdk.auth.AuthServiceObserver;
 import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.auth.constant.LoginSyncStatus;
+import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.MsgServiceObserve;
 import com.netease.nimlib.sdk.msg.SystemMessageObserver;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
@@ -51,6 +53,8 @@ public class LoginService {
 				if (callback != null) {
 					callback.onSuccess(result);
 				}
+				// 获取最近联系人列表，提前缓存用户信息
+				startSyncRecentContacts();
 				registerObserver(true);
 			}
 
@@ -80,6 +84,20 @@ public class LoginService {
 		account = null;
 		token = null;
 		registerObserver(false);
+	}
+	
+	private void startSyncRecentContacts() {
+		NIMClient.getService(MsgService.class).queryRecentContacts().setCallback(new RequestCallbackWrapper<List<RecentContact>>() {
+			@Override
+			public void onResult(int code, List<RecentContact> recentContacts, Throwable exception) {
+				Object recents = ReactCache.createRecentList(recentContacts);
+				Log.i(TAG, "recents: " + recents);
+			}
+			@Override
+			public void onFailed(int code) {
+				Log.i(TAG, "获取最近会话失败");
+			}
+		});
 	}
 
 	private void registerObserver(Boolean register) {

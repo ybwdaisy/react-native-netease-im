@@ -295,40 +295,25 @@ public class ReactCache {
 	// ******************************* 处理会话 *********************************
 	public static Object createRecentList(List <RecentContact> recents) {
 		WritableArray array = Arguments.createArray();
-		int unreadNumTotal = 0;
-		if (recents != null && recents.size() > 0) {
-
-			WritableMap map;
+		int unreadCount = 0;
+		if (recents != null && !recents.isEmpty()) {
 			for (RecentContact contact : recents) {
-				map = Arguments.createMap();
+				unreadCount += contact.getUnreadCount();
+
+				WritableMap map = Arguments.createMap();
 				String contactId = contact.getContactId();
-				unreadNumTotal += contact.getUnreadCount();
 				map.putString(MessageConstant.Contact.CONTACT_ID, contactId);
-				map.putString(MessageConstant.Contact.UNREAD_COUNT, String.valueOf(contact.getUnreadCount()));
-				String name = "";
-				SessionTypeEnum sessionType = contact.getSessionType();
-				String imagePath = "";
-				String ext = null;
-				if (sessionType == SessionTypeEnum.P2P) {
-					map.putString(MessageConstant.Contact.TEAM_TYPE, "-1");
-					UserInfoCache userInfoCache = UserInfoCache.getInstance();
-					imagePath = userInfoCache.getAvatar(contactId);
-					ext = userInfoCache.getExtension(contactId);
-					if(ext != null){
-						map.putString(MessageConstant.Contact.EXT, ext);
-					}
-					map.putString(MessageConstant.Contact.MUTE, boolean2String(NIMClient.getService(FriendService.class).isNeedMessageNotify(contactId)));
-					name = userInfoCache.getUserDisplayName(contactId);
-				}
-				map.putString(MessageConstant.Contact.IMAGE_PATH, imagePath);
-				map.putString(MessageConstant.Contact.NAME, name);
+				map.putInt(MessageConstant.Contact.UNREAD_COUNT, contact.getUnreadCount());
 				map.putString(MessageConstant.Contact.SESSION_TYPE, Integer.toString(contact.getSessionType().getValue()));
 				map.putString(MessageConstant.Contact.MSG_TYPE, Integer.toString(contact.getMsgType().getValue()));
 				map.putString(MessageConstant.Contact.MSG_STATUS, Integer.toString(contact.getMsgStatus().getValue()));
 				map.putString(MessageConstant.Contact.MESSAGE_ID, contact.getRecentMessageId());
+				map.putString(MessageConstant.Contact.FROM_ACCOUNT, contact.getFromAccount());
 
-				String fromAccount = contact.getFromAccount();
-				map.putString(MessageConstant.Contact.FROM_ACCOUNT, fromAccount);
+				UserInfoCache userInfoCache = UserInfoCache.getInstance();
+				map.putString(MessageConstant.Contact.NAME, userInfoCache.getUserDisplayName(contactId));
+				map.putString(MessageConstant.Contact.IMAGE_PATH, userInfoCache.getAvatar(contactId));
+				map.putString(MessageConstant.Contact.EXT, userInfoCache.getExtension(contactId));
 
 				String content = contact.getContent();
 				switch (contact.getMsgType()) {
@@ -359,17 +344,6 @@ public class ReactCache {
 						break;
 				}
 				map.putString(MessageConstant.Contact.TIME, TimeUtil.getTimeShowString(contact.getTime(), true));
-				String fromNick = "";
-				if (!TextUtils.isEmpty(fromAccount)) {
-					try {
-						fromNick = contact.getFromNick();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-
-					fromNick = TextUtils.isEmpty(fromNick) ? UserInfoCache.getInstance().getUserDisplayName(fromAccount) : fromNick;
-					map.putString(MessageConstant.Contact.NICK, fromNick);
-				}
 				CustomAttachment attachment = null;
 				try {
 					if (contact.getMsgType() == MsgTypeEnum.custom) {
@@ -393,7 +367,7 @@ public class ReactCache {
 		}
 		WritableMap writableMap = Arguments.createMap();
 		writableMap.putArray(MessageConstant.Contact.RECENTS, array);
-		writableMap.putInt(MessageConstant.Contact.UNREAD_COUNT, unreadNumTotal);
+		writableMap.putInt(MessageConstant.Contact.UNREAD_COUNT, unreadCount);
 		return writableMap;
 	}
 
