@@ -200,6 +200,13 @@
 
 
 #pragma mark - Utils
+
+- (void)getRecentContact {
+    NSMutableArray *allRecentSessions = [[[NIMSDK sharedSDK] conversationManager] allRecentSessions];
+    NSMutableDictionary *result = [MessageUtils createRecentContact:allRecentSessions];
+    [ShareDataManager shared].recentContact = result;
+}
+
 - (void)setApnsPayload:(NIMMessage *)message {
     NSMutableDictionary *payload = [NSMutableDictionary dictionary];
 
@@ -247,6 +254,7 @@
         case NIMLoginStepSyncOK:
             onlineStatus = @"8";
             loginSyncDataStatus = @"2";
+            [self getRecentContact];
             break;
         case NIMLoginStepLoseConnection:
             onlineStatus = @"9";

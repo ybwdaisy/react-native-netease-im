@@ -306,7 +306,7 @@ public class ReactCache {
 				map.putInt(MessageConstant.Contact.UNREAD_COUNT, contact.getUnreadCount());
 				map.putString(MessageConstant.Contact.SESSION_TYPE, Integer.toString(contact.getSessionType().getValue()));
 				map.putString(MessageConstant.Contact.MSG_TYPE, Integer.toString(contact.getMsgType().getValue()));
-				map.putString(MessageConstant.Contact.MSG_STATUS, Integer.toString(contact.getMsgStatus().getValue()));
+				map.putString(MessageConstant.Contact.MSG_STATUS, getMessageStatus(contact.getMsgStatus()));
 				map.putString(MessageConstant.Contact.MESSAGE_ID, contact.getRecentMessageId());
 				map.putString(MessageConstant.Contact.FROM_ACCOUNT, contact.getFromAccount());
 

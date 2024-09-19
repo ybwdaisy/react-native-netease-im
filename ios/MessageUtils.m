@@ -153,7 +153,7 @@
         [newRecent setObject:[NSString stringWithFormat:@"%@", [MessageUtils getUserName:recent.session.sessionId]] forKey:@"name"];
         [newRecent setObject:[NSString stringWithFormat:@"%@", recent.lastMessage.from] forKey:@"fromAccount"];
         [newRecent setObject:[NSString stringWithFormat:@"%zd", recent.lastMessage.messageType] forKey:@"msgType"];
-        [newRecent setObject:[NSString stringWithFormat:@"%zd", recent.lastMessage.deliveryState] forKey:@"msgStatus"];
+        [newRecent setObject:[NSString stringWithFormat:@"%@", [MessageUtils convertNIMMessageDeliveryStateToString:recent.lastMessage.deliveryState]] forKey:@"msgStatus"];
         [newRecent setObject:[NSString stringWithFormat:@"%@", recent.lastMessage.messageId] forKey:@"messageId"];
         [newRecent setObject:[NSString stringWithFormat:@"%@", [MessageUtils getContent:recent.lastMessage]] forKey:@"content"];
         [newRecent setObject:[NSString stringWithFormat:@"%@", [MessageUtils getShowTime:recent.lastMessage.timestamp showDetail:NO]] forKey:@"time"];
