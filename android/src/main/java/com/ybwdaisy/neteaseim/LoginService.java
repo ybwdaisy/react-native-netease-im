@@ -54,7 +54,7 @@ public class LoginService {
 					callback.onSuccess(result);
 				}
 				// 获取最近联系人列表，提前缓存用户信息
-				startSyncRecentContacts();
+				queryRecentContacts();
 				registerObserver(true);
 			}
 
@@ -85,13 +85,14 @@ public class LoginService {
 		token = null;
 		registerObserver(false);
 	}
-	
-	private void startSyncRecentContacts() {
+
+	private void queryRecentContacts() {
 		NIMClient.getService(MsgService.class).queryRecentContacts().setCallback(new RequestCallbackWrapper<List<RecentContact>>() {
 			@Override
 			public void onResult(int code, List<RecentContact> recentContacts, Throwable exception) {
 				Object recents = ReactCache.createRecentList(recentContacts);
 				Log.i(TAG, "recents: " + recents);
+				ReactCache.emit(MessageConstant.Event.observeRecentContact, recents);
 			}
 			@Override
 			public void onFailed(int code) {
@@ -112,6 +113,9 @@ public class LoginService {
 		NIMClient.getService(AuthServiceObserver.class).observeLoginSyncDataStatus(new Observer<LoginSyncStatus>() {
 			public void onEvent(LoginSyncStatus status) {
 				Log.i(TAG, "loginSyncStatus: " + status);
+				if (status == LoginSyncStatus.SYNC_COMPLETED) {
+					queryRecentContacts();
+				}
 				ReactCache.emit(MessageConstant.Event.observeLoginSyncDataStatus, status);
 			}
 		}, register);

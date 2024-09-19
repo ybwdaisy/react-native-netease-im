@@ -59,7 +59,7 @@
     NIMMessage *message = [[NIMMessage alloc] init];
     message.text = text;
     message.apnsContent = text;
-    
+
     [self setApnsPayload:message];
     [[[NIMSDK sharedSDK] chatManager] sendMessage:message toSession:_session error:nil];
 }
@@ -70,19 +70,19 @@
     NIMImageOption *option  = [[NIMImageOption alloc] init];
     option.compressQuality = 0.8;
     imageObject.option = option;
-    
+
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
     NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
     imageObject.displayName = displayName ? displayName : [NSString stringWithFormat:@"图片发送于%@", dateString];
-    
+
     NIMMessage *message = [[NIMMessage alloc] init];
     message.messageObject = imageObject;
     message.apnsContent = @"发来了一张图片";
 
     [self setApnsPayload:message];
     [[[NIMSDK sharedSDK] chatManager] sendMessage:message toSession:_session error:nil];
-    
+
 }
 
 - (void)sendCustomMessage:(NSDictionary *)dict {
@@ -91,11 +91,11 @@
     attachment.type = CustomMessageTypeCustom;
     attachment.data = dict;
     customObject.attachment = attachment;
-    
+
     NIMMessage *message = [[NIMMessage alloc] init];
     message.messageObject = customObject;
     message.apnsContent = [dict objectForKey:@"pushContent"];
-    
+
     [self setApnsPayload:message];
     [[[NIMSDK sharedSDK] chatManager] sendMessage:message toSession:_session error:nil];
 }
@@ -104,15 +104,15 @@
     NSArray *messageIds = [[NSArray alloc]initWithObjects:messageId, nil];
     NSArray *messages = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_session messageIds:messageIds];
     NIMMessage *message = messages[0];
-    
+
     CustomAttachment *customAttachment = [[CustomAttachment alloc] init];
     customAttachment.type = CustomMessageTypeCustom;
     customAttachment.data = attachment;
-    
+
     NIMCustomObject *customObject = [[NIMCustomObject alloc] init];
     customObject.attachment = customAttachment;
     message.messageObject = customObject;
-    
+
     [[[NIMSDK sharedSDK] conversationManager] updateMessage:message forSession:_session completion:nil];
 }
 
@@ -120,7 +120,7 @@
     NSArray *messageIds = [[NSArray alloc]initWithObjects:messageId, nil];
     NSArray *messages = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_session messageIds:messageIds];
     NIMMessage *message = messages[0];
-    
+
     if (message.isReceivedMsg) {
         [[[NIMSDK sharedSDK] chatManager] fetchMessageAttachment:message error:nil];
     } else {
@@ -132,7 +132,7 @@
     NSArray *messageIds = [[NSArray alloc]initWithObjects:messageId, nil];
     NSArray *messages = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_session messageIds:messageIds];
     NIMMessage *message = messages[0];
-    
+
     [[[NIMSDK sharedSDK] conversationManager] deleteMessage:message];
 }
 
@@ -153,6 +153,7 @@
 
 - (void)clearAllUnreadCount {
     [[[NIMSDK sharedSDK] conversationManager] markAllMessagesRead];
+    [self getRecentContact];
 }
 
 - (void)queryMessageListEx:(NSString *)messageId withLimit:(NSInteger)limit success:(Success)success error:(Errors)error {
@@ -163,7 +164,7 @@
         NSArray *messages = [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_session messageIds:messageIds];
         anchorMessage = messages[0];
     }
-    
+
     [[[NIMSDK sharedSDK] conversationManager] messagesInSession:_session message:anchorMessage limit:limit completion:^(NSError * _Nullable err, NSArray<NIMMessage *> * _Nullable messages) {
         if (err != nil || messages == nil) {
             error(@"获取历史消息失败");
@@ -172,7 +173,7 @@
         NSMutableArray *finalMessages = [MessageUtils createMessageList:messages];
         success(finalMessages);
     }];
-    
+
 }
 
 - (void)queryRecentContacts:(Success)success error:(Errors)error {
@@ -213,14 +214,14 @@
     NSMutableDictionary *apsField = [NSMutableDictionary dictionary];
     [apsField setValue:@1 forKey:@"content-available"];
     [payload setValue:apsField forKey:@"apsField"];
-    
+
     NSMutableDictionary *sessionInfo = [NSMutableDictionary dictionary];
     NSString *sessionId = [[[NIMSDK sharedSDK] loginManager] currentAccount];
     NSString *sessionType = [NSString stringWithFormat:@"%zd", _session.sessionType];
     [sessionInfo setValue:sessionId forKey:@"sessionId"];
     [sessionInfo setValue:sessionType forKey:@"sessionType"];
     [payload setValue:sessionInfo forKey:@"session"];
-    
+
     message.apnsPayload = payload;
 }
 
@@ -268,15 +269,15 @@
         default:
             break;
     }
-    
+
     if (onlineStatus != nil) {
         [ShareDataManager shared].onlineStatus = onlineStatus;
     }
-    
+
     if (loginSyncDataStatus != nil) {
         [ShareDataManager shared].loginSyncDataStatus = loginSyncDataStatus;
     }
-    
+
 }
 
 
@@ -291,7 +292,7 @@
     NSMutableArray *messages = [[NSMutableArray alloc] initWithObjects:message, nil];
     NSMutableArray *newMessages = [MessageUtils createMessageList:messages];
     [ShareDataManager shared].messageList = newMessages;
-    
+
     NSMutableDictionary *attachmentProgress = [NSMutableDictionary dictionary];
     [attachmentProgress setValue:message.messageId forKey:@"uuid"];
     [attachmentProgress setValue:@(progress) forKey:@"progress"];
@@ -312,23 +313,16 @@
 
 #pragma mark NIMConversationManagerDelegate
 - (void)didAddRecentSession:(NIMRecentSession *)recentSession totalUnreadCount:(NSInteger)totalUnreadCount {
-    [self updateRecent:recentSession totalUnreadCount:totalUnreadCount];
+    [self getRecentContact];
 }
 
 - (void)didUpdateRecentSession:(NIMRecentSession *)recentSession totalUnreadCount:(NSInteger)totalUnreadCount {
-    [self updateRecent:recentSession totalUnreadCount:totalUnreadCount];
+    [self getRecentContact];
 }
 
 - (void)didRemoveRecentSession:(NIMRecentSession *)recentSession totalUnreadCount:(NSInteger)totalUnreadCount {
-    [self updateRecent:recentSession totalUnreadCount:totalUnreadCount];
+    [self getRecentContact];
 }
-
-- (void)updateRecent:(NIMRecentSession *)recentSession totalUnreadCount:(NSInteger)totalUnreadCount {
-    NSMutableArray *recents = [[NSMutableArray alloc] initWithObjects:recentSession, nil];
-    NSMutableDictionary *result = [MessageUtils createRecentContact:recents];
-    [ShareDataManager shared].recentContact = result;
-}
-
 
 #pragma mark NIMSystemNotificationManagerDelegate
 - (void)onReceiveSystemNotification:(NIMSystemNotification *)notification {

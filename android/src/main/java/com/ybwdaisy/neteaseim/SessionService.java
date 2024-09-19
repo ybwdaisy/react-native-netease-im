@@ -278,7 +278,7 @@ public class SessionService {
 		service.observeRecentContact(new Observer<List<RecentContact>>() {
 			@Override
 			public void onEvent(List<RecentContact> recentContacts) {
-				onRecentContact(recentContacts);
+				getRecentContact();
 			}
 		}, register);
 
@@ -318,8 +318,19 @@ public class SessionService {
 		ReactCache.emit(MessageConstant.Event.observeReceiveMessage, data);
 	}
 
-	public void onRecentContact(List<RecentContact> recentContacts) {
-		ReactCache.emit(MessageConstant.Event.observeRecentContact, ReactCache.createRecentList(recentContacts));
+	public void getRecentContact() {
+		NIMClient.getService(MsgService.class).queryRecentContacts().setCallback(new RequestCallbackWrapper<List<RecentContact>>() {
+			@Override
+			public void onResult(int code, List<RecentContact> recentContacts, Throwable exception) {
+				Object recents = ReactCache.createRecentList(recentContacts);
+				Log.i(TAG, "recents: " + recents);
+				ReactCache.emit(MessageConstant.Event.observeRecentContact, recents);
+			}
+			@Override
+			public void onFailed(int code) {
+				Log.i(TAG, "获取最近会话失败");
+			}
+		});
 	}
 
 	public void onAttachmentProgress(AttachmentProgress attachmentProgress) {

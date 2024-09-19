@@ -248,9 +248,14 @@
 }
 
 + (NSString *)getExt:(NSString *)userId {
-     NIMUser *user = [[NIMSDK sharedSDK].userManager userInfo:userId];
-     NIMUserInfo * userInfo = user.userInfo;
-     return userInfo.ext;
+    NIMUser *user = [[NIMSDK sharedSDK].userManager userInfo:userId];
+    NIMUserInfo * userInfo = user.userInfo;
+    
+    if (userInfo.ext != nil) {
+        return userInfo.ext;
+    }
+
+    return @"";
 }
 
 + (NSString *)getContent:(NIMMessage *)lastMessage {
