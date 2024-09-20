@@ -3,8 +3,8 @@ package com.ybwdaisy.neteaseim;
 public class MessageConstant {
 	public class MsgType {
 		public final static String TEXT = "text";
-		public final static String VOICE = "voice";
 		public final static String IMAGE = "image";
+		public final static String AUDIO = "audio";
 		public final static String VIDEO = "video";
 		public final static String FILE = "file";
 		public final static String ROBOT = "robot";

@@ -20,7 +20,7 @@
 
 + (NSMutableDictionary *)createMessage:(NIMMessage *)message {
     NSMutableDictionary *newMessage = [NSMutableDictionary dictionary];
-    
+
     [newMessage setObject:[NSString stringWithFormat:@"%@", message.messageId] forKey:@"msgId"];
     NSString *msgType = [MessageUtils convertNIMMessageTypeToString:message.messageType];
     [newMessage setObject:[NSString stringWithFormat:@"%@", msgType] forKey:@"msgType"];
@@ -29,7 +29,7 @@
     [newMessage setObject:[NSString stringWithFormat:@"%@", message.text ? message.text : @""] forKey:@"text"];
     [newMessage setObject:[NSString stringWithFormat:@"%@", message.session.sessionId] forKey:@"sessionId"];
     [newMessage setObject:[NSString stringWithFormat:@"%ld", message.session.sessionType] forKey:@"sessionType"];
-    
+
     // fromUser
     NIMUser *user = [[[NIMSDK sharedSDK] userManager] userInfo:message.from];
     NSMutableDictionary *fromUser = [NSMutableDictionary dictionary];
@@ -45,9 +45,9 @@
     }
     [fromUser setObject:[NSString stringWithFormat:@"%@", name] forKey:@"name"];
     [newMessage setObject:fromUser forKey:@"fromUser"];
-    
+
     // status
-    NSString *status = [MessageUtils convertNIMMessageDeliveryStateToString:message.deliveryState];
+    NSString *status = [MessageUtils convertDeliveryStateToString:message.deliveryState];
     NSString *isFriend = [message.localExt objectForKey:@"isFriend"];
     if ([isFriend length]) {
         if ([isFriend isEqualToString:@"NO"]) {
@@ -55,7 +55,7 @@
         }
     }
     [newMessage setObject:status forKey:@"status"];
-    
+
     // extend
     switch (message.messageType) {
         case NIMMessageTypeImage: {
@@ -135,7 +135,7 @@
         default:
             break;
     }
-    
+
     return newMessage;
 }
 
@@ -144,22 +144,22 @@
     NSInteger unreadCount = 0;
     for (NIMRecentSession *recent in recents) {
         unreadCount = unreadCount + recent.unreadCount;
-        
+
         NSMutableDictionary *newRecent = [NSMutableDictionary dictionary];
-        
+
+        [newRecent setValue:@(recent.unreadCount) forKey:@"unreadCount"];
         [newRecent setObject:[NSString stringWithFormat:@"%@", recent.session.sessionId] forKey:@"contactId"];
         [newRecent setObject:[NSString stringWithFormat:@"%zd", recent.session.sessionType] forKey:@"sessionType"];
-        [newRecent setObject:[NSString stringWithFormat:@"%zd", recent.unreadCount] forKey:@"unreadCount"];
         [newRecent setObject:[NSString stringWithFormat:@"%@", [MessageUtils getUserName:recent.session.sessionId]] forKey:@"name"];
         [newRecent setObject:[NSString stringWithFormat:@"%@", recent.lastMessage.from] forKey:@"fromAccount"];
         [newRecent setObject:[NSString stringWithFormat:@"%zd", recent.lastMessage.messageType] forKey:@"msgType"];
-        [newRecent setObject:[NSString stringWithFormat:@"%@", [MessageUtils convertNIMMessageDeliveryStateToString:recent.lastMessage.deliveryState]] forKey:@"msgStatus"];
+        [newRecent setObject:[NSString stringWithFormat:@"%@", [MessageUtils convertDeliveryStateToString:recent.lastMessage.deliveryState]] forKey:@"msgStatus"];
         [newRecent setObject:[NSString stringWithFormat:@"%@", recent.lastMessage.messageId] forKey:@"messageId"];
         [newRecent setObject:[NSString stringWithFormat:@"%@", [MessageUtils getContent:recent.lastMessage]] forKey:@"content"];
         [newRecent setObject:[NSString stringWithFormat:@"%@", [MessageUtils getShowTime:recent.lastMessage.timestamp showDetail:NO]] forKey:@"time"];
         [newRecent setObject:[NSString stringWithFormat:@"%@", [MessageUtils getUserAvatar:recent.session.sessionId]] forKey:@"imagePath"];
         [newRecent setObject:[MessageUtils getExt:recent.session.sessionId] forKey:@"ext"];
-        
+
         [newRecents addObject:newRecent];
     }
     NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
@@ -172,11 +172,11 @@
     NSMutableArray *newNotifications = [NSMutableArray array];
     for (NIMSystemNotification *notification in notifications) {
         NSMutableDictionary *newNotification = [NSMutableDictionary dictionary];
-        
+
         NSMutableDictionary *verifyInfo = [MessageUtils getVerifyInfo:notification];
         NSString *isVerify = [verifyInfo objectForKey:@"isVerify"];
         NSString *verifyText = [verifyInfo objectForKey:@"verifyText"];
-        
+
         [newNotification setObject:[NSString stringWithFormat:@"%@", isVerify] forKey:@"isVerify"];
         [newNotification setObject:[NSString stringWithFormat:@"%@", verifyText] forKey:@"verifyText"];
         [newNotification setObject:[NSString stringWithFormat:@"%lld", notification.notificationId] forKey:@"messageId"];
@@ -188,15 +188,15 @@
         [newNotification setObject:[NSString stringWithFormat:@"%@", [MessageUtils getUserAvatar:notification.sourceID]] forKey:@"avatar"];
         [newNotification setObject:[NSString stringWithFormat:@"%ld", notification.handleStatus] forKey:@"status"];
         [newNotification setObject:[NSString stringWithFormat:@"%f", notification.timestamp] forKey:@"time"];
-        
+
         [newNotifications addObject:newNotification];
     }
-    
+
     return newNotifications;
 }
 
 #pragma mark Message Utils
-+ (NSString *)convertNIMMessageDeliveryStateToString:(NIMMessageDeliveryState)state {
++ (NSString *)convertDeliveryStateToString:(NIMMessageDeliveryState)state {
     switch (state) {
        case NIMMessageDeliveryStateFailed:
             return @"send_failed";
@@ -250,7 +250,7 @@
 + (NSString *)getExt:(NSString *)userId {
     NIMUser *user = [[NIMSDK sharedSDK].userManager userInfo:userId];
     NIMUserInfo * userInfo = user.userInfo;
-    
+
     if (userInfo.ext != nil) {
         return userInfo.ext;
     }
@@ -277,7 +277,7 @@
             text = @"[位置]";
             break;
         case NIMMessageTypeNotification:
-            text = @"[未知消息]";
+            text = @"[系统通知]";
             break;
         case NIMMessageTypeFile:
             text = @"[文件]";
@@ -312,7 +312,7 @@
     NSCalendarUnit components = (NSCalendarUnit)(NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitWeekday|NSCalendarUnitHour | NSCalendarUnitMinute);
     NSDateComponents *nowDateComponents = [[NSCalendar currentCalendar] components:components fromDate:nowDate];
     NSDateComponents *msgDateComponents = [[NSCalendar currentCalendar] components:components fromDate:msgDate];
-    
+
     NSInteger hour = msgDateComponents.hour;
     double OnedayTimeIntervalValue = 24*60*60;
 
@@ -320,7 +320,7 @@
     if (hour > 12) {
         hour = hour - 12;
     }
-    
+
     if(nowDateComponents.day == msgDateComponents.day) {
         result = [[NSString alloc] initWithFormat:@"%@ %zd:%02d", result, hour, (int)msgDateComponents.minute];
     } else if(nowDateComponents.day == (msgDateComponents.day + 1)) {
@@ -369,7 +369,7 @@
     NSString *isVerify = @"0";
     NSString *verifyText = @"未知请求";
     NIMTeam *team = [[[NIMSDK sharedSDK] teamManager] teamById:notification.targetID];
-    
+
     switch (notification.type) {
         case NIMSystemNotificationTypeTeamApply: {
             isVerify = @"1";
@@ -416,13 +416,13 @@
         default:
             break;
     }
-    
+
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
     [result setValue:isVerify forKey:@"isVerify"];
     [result setValue:verifyText forKey:@"verifyText"];
-    
+
     return result;
-    
+
 }
 
 

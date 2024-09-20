@@ -223,7 +223,7 @@ public class ReactCache {
 				type = MessageConstant.MsgType.IMAGE;
 				break;
 			case audio:
-				type = MessageConstant.MsgType.VOICE;
+				type = MessageConstant.MsgType.AUDIO;
 				break;
 			case video:
 				type = MessageConstant.MsgType.VIDEO;
@@ -302,8 +302,8 @@ public class ReactCache {
 
 				WritableMap map = Arguments.createMap();
 				String contactId = contact.getContactId();
-				map.putString(MessageConstant.Contact.CONTACT_ID, contactId);
 				map.putInt(MessageConstant.Contact.UNREAD_COUNT, contact.getUnreadCount());
+				map.putString(MessageConstant.Contact.CONTACT_ID, contactId);
 				map.putString(MessageConstant.Contact.SESSION_TYPE, Integer.toString(contact.getSessionType().getValue()));
 				map.putString(MessageConstant.Contact.MSG_TYPE, Integer.toString(contact.getMsgType().getValue()));
 				map.putString(MessageConstant.Contact.MSG_STATUS, getMessageStatus(contact.getMsgStatus()));
@@ -313,6 +313,7 @@ public class ReactCache {
 				UserInfoCache userInfoCache = UserInfoCache.getInstance();
 				map.putString(MessageConstant.Contact.NAME, userInfoCache.getUserDisplayName(contactId));
 				map.putString(MessageConstant.Contact.IMAGE_PATH, userInfoCache.getAvatar(contactId));
+				map.putString(MessageConstant.Contact.TIME, TimeUtil.getTimeShowString(contact.getTime(), true));
 				map.putString(MessageConstant.Contact.EXT, userInfoCache.getExtension(contactId));
 
 				String content = contact.getContent();
@@ -332,6 +333,9 @@ public class ReactCache {
 					case location:
 						content = "[位置]";
 						break;
+					case notification:
+						content = "[系统通知]";
+						break;
 					case tip:
 						List<String> uuids = new ArrayList<>();
 						uuids.add(contact.getRecentMessageId());
@@ -341,9 +345,9 @@ public class ReactCache {
 						}
 						break;
 					default:
+						content = "[未知消息]";
 						break;
 				}
-				map.putString(MessageConstant.Contact.TIME, TimeUtil.getTimeShowString(contact.getTime(), true));
 				CustomAttachment attachment = null;
 				try {
 					if (contact.getMsgType() == MsgTypeEnum.custom) {
@@ -353,7 +357,6 @@ public class ReactCache {
 					e.printStackTrace();
 				}
 				if (attachment != null) {
-					map.putString(MessageConstant.Contact.TYPE, attachment.getType());
 					if (attachment instanceof DefaultCustomAttachment) {
 						content = ((DefaultCustomAttachment) attachment).getRecentContent();
 						if (TextUtils.isEmpty(content)) {

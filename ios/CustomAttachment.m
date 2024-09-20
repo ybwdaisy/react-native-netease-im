@@ -10,17 +10,17 @@
 @implementation CustomAttachment
 
 - (NSString *)encodeAttachment {
-    
+
     NSDictionary *dict = [[NSDictionary alloc] init];
-    
+
     NSString *type = @"unknown";
     if (self.type == CustomMessageTypeCustom) {
         type = @"custom";
     }
-    
+
     [dict setValue:type forKey:@"type"];
     [dict setValue:self.data forKey:@"data"];
-    
+
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
     NSString *content = nil;
     if (jsonData) {
